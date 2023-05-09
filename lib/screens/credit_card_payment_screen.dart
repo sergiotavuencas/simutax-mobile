@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/theme/app_style.dart';
-import 'package:simutax_front/theme/widgets/cpf_cnpj_field.dart';
-import 'package:simutax_front/theme/widgets/credit_card_cvc_field.dart';
-import 'package:simutax_front/theme/widgets/credit_card_expiration_date_field.dart';
-import 'package:simutax_front/theme/widgets/credit_card_field.dart';
-import 'package:simutax_front/theme/widgets/full_name_field.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
+import 'package:simutax_mobile/theme/widgets/credit_card_cvc_field.dart';
+import 'package:simutax_mobile/theme/widgets/credit_card_expiration_date_field.dart';
+import 'package:simutax_mobile/theme/widgets/credit_card_field.dart';
+import 'package:simutax_mobile/theme/widgets/full_name_field.dart';
 
 class CreditCardPaymentScreen extends StatefulWidget {
   const CreditCardPaymentScreen({super.key});

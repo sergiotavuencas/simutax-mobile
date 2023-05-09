@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/theme/app_style.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
 
 class RepasswordField extends StatefulWidget {
   const RepasswordField(

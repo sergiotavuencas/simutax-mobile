@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:simutax_front/theme/app_style.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
 
 class Style {
   late AppStyle appStyle;

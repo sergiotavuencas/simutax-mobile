@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/theme/app_style.dart';
-import 'package:simutax_front/theme/widgets/email_field.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/widgets/email_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

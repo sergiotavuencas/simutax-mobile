@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/routes.dart';
-import 'package:simutax_front/theme/app_style.dart';
+import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
 
 class StartupScreen extends StatefulWidget {
   const StartupScreen({super.key});

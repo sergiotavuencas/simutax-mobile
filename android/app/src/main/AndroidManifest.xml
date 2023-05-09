@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.simutax_front">
+    package="com.example.simutax_mobile">
    <application
-        android:label="simutax_front"
+        android:label="simutax_mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

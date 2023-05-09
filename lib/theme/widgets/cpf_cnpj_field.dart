@@ -1,8 +1,8 @@
 import 'package:cpf_cnpj_validator/cnpj_validator.dart';
 import 'package:cpf_cnpj_validator/cpf_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:simutax_front/extensions/string.dart';
-import 'package:simutax_front/theme/app_style.dart';
+import 'package:simutax_mobile/extensions/string.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
 
 class CpfCnpjField extends StatefulWidget {
   const CpfCnpjField({super.key, required this.controller});

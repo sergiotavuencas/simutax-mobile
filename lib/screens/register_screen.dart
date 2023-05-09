@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/theme/app_style.dart';
-import 'package:simutax_front/theme/widgets/cpf_cnpj_field.dart';
-import 'package:simutax_front/theme/widgets/email_field.dart';
-import 'package:simutax_front/theme/widgets/first_name_field.dart';
-import 'package:simutax_front/theme/widgets/last_name_field.dart';
-import 'package:simutax_front/theme/widgets/password_field.dart';
-import 'package:simutax_front/theme/widgets/repassword_field.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
+import 'package:simutax_mobile/theme/widgets/email_field.dart';
+import 'package:simutax_mobile/theme/widgets/first_name_field.dart';
+import 'package:simutax_mobile/theme/widgets/last_name_field.dart';
+import 'package:simutax_mobile/theme/widgets/password_field.dart';
+import 'package:simutax_mobile/theme/widgets/repassword_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

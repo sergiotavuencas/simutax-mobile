@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:simutax_front/extensions/formatter.dart';
-import 'package:simutax_front/extensions/string.dart';
-import 'package:simutax_front/theme/app_style.dart';
+import 'package:simutax_mobile/extensions/formatter.dart';
+import 'package:simutax_mobile/extensions/string.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
 
 class CreditCardField extends StatefulWidget {
   const CreditCardField({super.key, required this.controller});

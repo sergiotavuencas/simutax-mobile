@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import 'package:simutax_front/screens/comparation_screen.dart';
-import 'package:simutax_front/screens/credit_card_payment_screen.dart';
-import 'package:simutax_front/screens/forgot_password_screen.dart';
-import 'package:simutax_front/screens/home_screen.dart';
-import 'package:simutax_front/screens/login_screen.dart';
-import 'package:simutax_front/screens/pix_payment_screen.dart';
-import 'package:simutax_front/screens/payment_method_screen.dart';
-import 'package:simutax_front/screens/register_screen.dart';
-import 'package:simutax_front/screens/simulation_screen.dart';
-import 'package:simutax_front/screens/startup_screen.dart';
+import 'package:simutax_mobile/screens/comparation_screen.dart';
+import 'package:simutax_mobile/screens/credit_card_payment_screen.dart';
+import 'package:simutax_mobile/screens/forgot_password_screen.dart';
+import 'package:simutax_mobile/screens/home_screen.dart';
+import 'package:simutax_mobile/screens/login_screen.dart';
+import 'package:simutax_mobile/screens/pix_payment_screen.dart';
+import 'package:simutax_mobile/screens/payment_method_screen.dart';
+import 'package:simutax_mobile/screens/register_screen.dart';
+import 'package:simutax_mobile/screens/simulation_screen.dart';
+import 'package:simutax_mobile/screens/startup_screen.dart';
 
 class AppRoutes {
   AppRoutes._();

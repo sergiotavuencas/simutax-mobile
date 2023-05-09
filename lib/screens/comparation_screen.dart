@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_front/theme/app_style.dart';
-import 'package:simutax_front/theme/widgets/brand_field.dart';
-import 'package:simutax_front/theme/widgets/model_field.dart';
-import 'package:simutax_front/theme/widgets/type_checkboxes.dart';
+import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/widgets/brand_field.dart';
+import 'package:simutax_mobile/theme/widgets/model_field.dart';
+import 'package:simutax_mobile/theme/widgets/type_checkboxes.dart';
 
 class ComparationScreen extends StatefulWidget {
   const ComparationScreen({super.key});
