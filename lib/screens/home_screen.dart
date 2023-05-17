@@ -59,8 +59,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 14, top: 10),
-                  child: Text("Saldo disponível",
-                      style: appStyle.descriptionStyle),
+                  child: Text("Saldo disponível", style: appStyle.labelStyle),
                 )
               ],
             ),
@@ -84,6 +83,15 @@ class _HomeScreenViewState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+
+    final compareIcon = ClipRect(
+      child: Image.asset(
+        "lib/resources/icone-comparacao.png",
+        width: appStyle.width / 4,
+        height: appStyle.height / 4,
+        fit: BoxFit.scaleDown,
       ),
     );
 
@@ -113,13 +121,23 @@ class _HomeScreenViewState extends State<HomeScreen> {
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
                     ),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 10),
-                        child:
-                            Text("COMPARAR", style: appStyle.descriptionStyle),
-                      ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 25),
+                            child: compareIcon,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 10),
+                            child: Text("COMPARAR", style: appStyle.labelStyle),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -127,6 +145,15 @@ class _HomeScreenViewState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+
+    final simulateIcon = ClipRect(
+      child: Image.asset(
+        "lib/resources/icone-simulacao.png",
+        width: appStyle.width / 3,
+        height: appStyle.height / 3,
+        fit: BoxFit.scaleDown,
       ),
     );
 
@@ -156,13 +183,23 @@ class _HomeScreenViewState extends State<HomeScreen> {
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
                     ),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 10),
-                        child:
-                            Text("SIMULAR", style: appStyle.descriptionStyle),
-                      ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 25),
+                            child: simulateIcon,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 10),
+                            child: Text("SIMULAR", style: appStyle.labelStyle),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -179,7 +216,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
     final historyContainer = SizedBox(
       width: appStyle.width / 1.1,
-      height: appStyle.height / 3.1,
+      height: appStyle.height / 3.2,
       child: Container(
         decoration: BoxDecoration(
           color: appStyle.mediumGrey,

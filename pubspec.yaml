@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -38,6 +39,10 @@ dependencies:
   email_validator: ^2.1.17
   cpf_cnpj_validator: ^2.0.0
   intl: ^0.18.1
+  mongo_dart: ^0.9.1
+  http: ^0.13.6
+  shared_preferences: ^2.1.1
+  double_back_to_close_app: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -97,3 +102,5 @@ flutter:
     - lib/resources/simutax-mobile-logo.png
     - lib/resources/simutax-background.png
     - lib/resources/rickroll.png
+    - lib/resources/icone-comparacao.png
+    - lib/resources/icone-simulacao.png

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_mobile/screens/code_screen.dart';
+import 'package:simutax_mobile/screens/forgot_password_screen.dart';
+import 'package:simutax_mobile/screens/reset_password_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
-import 'package:simutax_mobile/theme/widgets/email_field.dart';
+import 'package:simutax_mobile/theme/widgets/code_field.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class CodeScreen extends StatefulWidget {
+  const CodeScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _ForgotPasswordScreenViewState();
+  State<StatefulWidget> createState() => _CodeScreenViewState();
 }
 
-class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
+class _CodeScreenViewState extends State<CodeScreen> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
 
@@ -19,12 +20,11 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
     final appStyle = AppStyle(context);
 
     final descriptionBox = SizedBox(
-      child: Text(
-          "Insira o seu endereço de e-mail para que possamos enviar um link para redefinir sua senha.",
+      child: Text("Insira o código enviado ao e-mail cadastrado.",
           style: appStyle.descriptionStyle),
     );
 
-    final emailField = EmailField(controller: emailController);
+    final emailField = CodeField(controller: emailController);
 
     final redefineButton = ElevatedButton(
       onPressed: () async {
@@ -33,7 +33,7 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute<void>(
-                builder: (BuildContext context) => const CodeScreen(),
+                builder: (BuildContext context) => const ResetPasswordScreen(),
               ),
             );
           });
@@ -76,7 +76,14 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
         title: const Text('Redefinir Senha'),
         leading: IconButton(
           icon: Icon(Icons.close, color: appStyle.darkGrey),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => {
+            Navigator.pushReplacement<void, void>(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const ForgotPasswordScreen(),
+              ),
+            )
+          },
         ),
       ),
       backgroundColor: Colors.white,

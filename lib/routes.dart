@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:simutax_mobile/screens/code_screen.dart';
 import 'package:simutax_mobile/screens/comparation_screen.dart';
 import 'package:simutax_mobile/screens/credit_card_payment_screen.dart';
 import 'package:simutax_mobile/screens/forgot_password_screen.dart';
@@ -7,6 +8,7 @@ import 'package:simutax_mobile/screens/login_screen.dart';
 import 'package:simutax_mobile/screens/pix_payment_screen.dart';
 import 'package:simutax_mobile/screens/payment_method_screen.dart';
 import 'package:simutax_mobile/screens/register_screen.dart';
+import 'package:simutax_mobile/screens/reset_password_screen.dart';
 import 'package:simutax_mobile/screens/simulation_screen.dart';
 import 'package:simutax_mobile/screens/startup_screen.dart';
 
@@ -17,6 +19,8 @@ class AppRoutes {
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String forgotPasswordScreen = '/forgot';
+  static const String codeScreen = '/code';
+  static const String resetPasswordScreen = '/reset';
   static const String homeScreen = '/home';
   static const String paymentMethodScreen = '/payment_method';
   static const String creditCardPaymentScreen = '/credit_card_payment';
@@ -30,6 +34,8 @@ class AppRoutes {
       loginScreen: (context) => const LoginScreen(),
       registerScreen: (context) => const RegisterScreen(),
       forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
+      codeScreen: (context) => const CodeScreen(),
+      resetPasswordScreen: (context) => const ResetPasswordScreen(),
       homeScreen: (context) => const HomeScreen(),
       paymentMethodScreen: (context) => const PaymentMethodScreen(),
       creditCardPaymentScreen: (context) => const CreditCardPaymentScreen(),

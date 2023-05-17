@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
 import 'package:simutax_mobile/theme/widgets/email_field.dart';
@@ -43,12 +47,45 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         passwordController: passwordController,
         repasswordController: repasswordController);
 
+    Future<bool> handleUserRegistration() async {
+      final api = Uri.parse("http://10.0.2.2:300/api/createUser");
+      late http.Response response;
+
+      try {
+        response = await http.post(api, body: {
+          "firstname": firstNameController.text,
+          "lastname": lasttNameController.text,
+          "identity": cpfCnpjController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+          "terms": 'true'
+        });
+
+        if (response.statusCode == 201) {
+          SharedPreferences sharedPref = await SharedPreferences.getInstance();
+          Map<String, dynamic> data = jsonDecode(response.body);
+          String token = data["message"]["token"];
+          sharedPref.setString('user_token', token);
+
+          String? user = sharedPref.getString('user_token');
+          print("USER: $user");
+
+          return true;
+        }
+      } catch (error) {
+        print("ERROR: $error");
+      }
+
+      return false;
+    }
+
     final registerButton = ElevatedButton(
       onPressed: () async {
         if (formKey.currentState!.validate() && agreeWithLGPD) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pop();
-          });
+          handleUserRegistration();
+          // Future.delayed(const Duration(seconds: 1), () {
+          //   Navigator.of(context).pop();
+          // });
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),

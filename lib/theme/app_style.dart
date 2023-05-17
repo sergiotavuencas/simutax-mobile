@@ -28,6 +28,8 @@ class AppStyle {
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
   TextStyle get descriptionStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
+  TextStyle get labelStyle => TextStyle(
+      fontSize: small, fontWeight: FontWeight.w700, color: Colors.black);
   TextStyle get buttonStyleBlue => TextStyle(
       fontSize: medium, fontWeight: FontWeight.w500, color: Colors.white);
   TextStyle get buttonStyleGrey =>

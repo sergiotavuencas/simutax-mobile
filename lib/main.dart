@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/screens/login_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/style.dart';
 
@@ -51,8 +52,13 @@ class _StartupScreenViewState extends State<StartupScreen>
     super.initState();
 
     Future.delayed(const Duration(seconds: 11), () {
-      dispose();
-      Navigator.of(context).pushNamed(AppRoutes.loginScreen);
+      controller.dispose();
+      Navigator.pushReplacement<void, void>(
+        context,
+        MaterialPageRoute<void>(
+          builder: (BuildContext context) => const LoginScreen(),
+        ),
+      );
     });
 
     Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -69,7 +75,6 @@ class _StartupScreenViewState extends State<StartupScreen>
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
