@@ -42,7 +42,7 @@ class _StartupScreenViewState extends State<StartupScreen>
   void initState() {
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 11),
+      duration: const Duration(seconds: 6),
     )..addListener(
         () {
           setState(() {});
@@ -51,7 +51,7 @@ class _StartupScreenViewState extends State<StartupScreen>
     controller.repeat(reverse: false);
     super.initState();
 
-    Future.delayed(const Duration(seconds: 11), () {
+    Future.delayed(const Duration(seconds: 6), () {
       controller.dispose();
       Navigator.pushReplacement<void, void>(
         context,
@@ -65,7 +65,7 @@ class _StartupScreenViewState extends State<StartupScreen>
       if (controller.isAnimating) {
         setState(() {
           if (sum < 100) {
-            sum += 10;
+            sum += 20;
             progress = "$sum %";
           }
         });

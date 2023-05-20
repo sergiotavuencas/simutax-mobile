@@ -30,6 +30,12 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
   void initState() {
     super.initState();
     getModels();
+
+    if (models.isNotEmpty) {
+      for (dynamic element in models) {
+        print(element);
+      }
+    }
   }
 
   void getModels() async {

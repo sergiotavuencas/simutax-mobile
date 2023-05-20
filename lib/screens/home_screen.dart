@@ -10,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreen> {
-
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
@@ -252,6 +251,18 @@ class _HomeScreenViewState extends State<HomeScreen> {
               color: Color.fromARGB(255, 95, 95, 95)),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.profileScreen);
+            },
+            icon: Padding(
+              padding: const EdgeInsets.only(right: 30),
+              child: Icon(Icons.account_circle,
+                  size: 40, color: appStyle.darkBlue),
+            ),
+          )
+        ],
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

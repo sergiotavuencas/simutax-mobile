@@ -1,77 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
-class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({super.key});
+class ShutProfileScreen extends StatefulWidget {
+  const ShutProfileScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _PaymentMethodScreenViewState();
+  State<StatefulWidget> createState() => _ShutProfileScreenViewState();
 }
 
-class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
+class _ShutProfileScreenViewState extends State<ShutProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
 
-    final descriptionBox = SizedBox(
-      child: Text("Escolha um método de pagamento.",
-          style: appStyle.descriptionStyle),
-    );
-
-    final pixButton = ElevatedButton(
+    final yesButton = ElevatedButton(
       onPressed: () async {
         Future.delayed(const Duration(seconds: 1), () {
           Navigator.of(context).pushNamed(AppRoutes.pixPaymentScreen);
         });
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Pix",
-              style: appStyle.buttonStyleBlue,
-            ),
-          ),
-          const Align(
-            alignment: Alignment.centerRight,
-            child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-          )
-        ],
+      child: Text(
+        "Sim",
+        style: appStyle.buttonStyleBlue,
       ),
     );
 
-    final creditCardButton = ElevatedButton(
+    final noButton = ElevatedButton(
       onPressed: () async {
         Future.delayed(const Duration(seconds: 1), () {
-          Navigator.of(context).pushNamed(AppRoutes.creditCardPaymentScreen);
+          Navigator.of(context).pushNamed(AppRoutes.pixPaymentScreen);
         });
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Cartão de crédito",
-              style: appStyle.buttonStyleBlue,
-            ),
-          ),
-          const Align(
-            alignment: Alignment.centerRight,
-            child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-          )
-        ],
+      child: Text(
+        "Não",
+        style: appStyle.buttonStyleBlue,
       ),
     );
 
-    final buttons = SizedBox(
-      height: appStyle.height / 1.35,
+    final buttonsContainer = SizedBox(
       width: appStyle.width / 1.1,
       child: Column(
-        children: <Widget>[pixButton, creditCardButton]
+        children: [yesButton, noButton]
             .map((widget) => Padding(
                   padding: EdgeInsets.only(bottom: appStyle.height / 60),
                   child: widget,
@@ -82,7 +55,7 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recarregar'),
+        // title: const Text('Conta'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 95, 95, 95)),
@@ -99,11 +72,18 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
-                  child: descriptionBox,
+                  child: Text(
+                    "Encerra conta?",
+                    style: GoogleFonts.dmSans(
+                      fontSize: appStyle.xxLarge,
+                      fontWeight: FontWeight.w900,
+                      color: appStyle.darkBlue,
+                    ),
+                  ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: appStyle.height / 10),
-                  child: buttons,
+                  padding: const EdgeInsets.only(top: 60),
+                  child: buttonsContainer,
                 ),
               ],
             ),

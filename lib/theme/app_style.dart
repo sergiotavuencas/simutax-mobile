@@ -19,6 +19,7 @@ class AppStyle {
   double get large => 24;
   double get xLarge => 28;
   double get xxLarge => 32;
+  double get xxxLarge => 100;
 
   TextStyle get groupStyle => GoogleFonts.dmSans(
       fontSize: medium, fontWeight: FontWeight.normal, color: Colors.white);
@@ -30,6 +31,10 @@ class AppStyle {
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
   TextStyle get labelStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.w700, color: Colors.black);
+  TextStyle get profileNameStyle => GoogleFonts.dmSans(
+      fontSize: medium, fontWeight: FontWeight.w700, color: Colors.black);
+  TextStyle get profileClipStyle => GoogleFonts.dmSans(
+      fontSize: xxxLarge, fontWeight: FontWeight.w700, color: Colors.white);
   TextStyle get buttonStyleBlue => TextStyle(
       fontSize: medium, fontWeight: FontWeight.w500, color: Colors.white);
   TextStyle get buttonStyleGrey =>

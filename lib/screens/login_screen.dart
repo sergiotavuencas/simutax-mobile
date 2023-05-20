@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
-import 'package:simutax_mobile/theme/utils.dart';
+// import 'package:simutax_mobile/theme/utils.dart';
 
 import '../theme/widgets/email_field.dart';
 import '../theme/widgets/login_password_field.dart';
@@ -56,7 +56,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
-    final utils = Utils(context);
+    // final utils = Utils(context);
 
     final appLogo = ClipRect(
       child: Image.asset(
@@ -72,19 +72,20 @@ class _LoginScreenViewState extends State<LoginScreen> {
 
     final accessButton = ElevatedButton(
       onPressed: () async {
-        if (formKey.currentState!.validate()) {
-          canAdvance = handleUserLogin();
+        Navigator.of(context).pushNamed(AppRoutes.homeScreen);
+        // if (formKey.currentState!.validate()) {
+        //   canAdvance = handleUserLogin();
 
-          if (await canAdvance) {
-            utils.snack('Efetuando login! Aguarde...');
-            Future.delayed(const Duration(seconds: 2), () {
-              Navigator.of(context).pushNamed(AppRoutes.homeScreen);
-            });
-          } else {
-            String? error = prefs.getString('user_login_error');
-            utils.alert('ERRO: $error');
-          }
-        }
+        //   if (await canAdvance) {
+        //     utils.snack('Efetuando login! Aguarde...');
+        //     Future.delayed(const Duration(seconds: 2), () {
+        //       Navigator.of(context).pushNamed(AppRoutes.homeScreen);
+        //     });
+        //   } else {
+        //     String? error = prefs.getString('user_login_error');
+        //     utils.alert('ERRO: $error');
+        //   }
+        // }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
       child: Text(
