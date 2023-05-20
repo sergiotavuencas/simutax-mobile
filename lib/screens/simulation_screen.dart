@@ -37,7 +37,7 @@ class _SimulationScreenViewState extends State<SimulationScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final brandField = BrandField(controller: brandController);
+    // final brandField = BrandField(controller: brandController);
 
     final priceField = Row(
       children: [
@@ -56,7 +56,7 @@ class _SimulationScreenViewState extends State<SimulationScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: descriptionBox,
           ),
-          brandField,
+          // brandField,
           priceField,
         ]
             .map((widget) => Padding(

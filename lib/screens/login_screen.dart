@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
@@ -19,35 +22,41 @@ class _LoginScreenViewState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  late SharedPreferences prefs;
+  late Future<bool> canAdvance;
+
+  Future<bool> handleUserLogin() async {
+    try {
+      prefs = await SharedPreferences.getInstance();
+      final api = Uri.parse("http://10.0.2.2:300/api/loginUser");
+      http.Response response = await http.post(api, body: {
+        "email": emailController.text,
+        "password": passwordController.text,
+      });
+      Map<String, dynamic> data = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        String token = data["message"]["token"];
+        prefs.setString('user_token', token);
+        return true;
+      } else if (response.statusCode == 400) {
+        String message = data["message"] == "Senha invalida"
+            ? "Dados inválidos"
+            : data["message"];
+        prefs.setString('user_login_error', message);
+        return false;
+      }
+    } catch (error) {
+      prefs.setString('user_login_error', error.toString());
+    }
+
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
-    final utils = Utils(context: context);
-    Future<bool> canAdvance;
-
-    Future<bool> handleUserLogin() async {
-      // utils.loadingAnimation();
-      try {
-        final api = Uri.parse("http://10.0.2.2:300/api/loginUser");
-        late http.Response response;
-        response = await http.post(
-          api,
-          body: {
-            "email": emailController.text,
-            "password": passwordController.text
-          },
-        );
-
-        if (response.statusCode == 201) {
-          return true;
-        }
-      } catch (error) {
-        utils.alert("ERROR: $error");
-      }
-
-      return false;
-    }
+    final utils = Utils(context);
 
     final appLogo = ClipRect(
       child: Image.asset(
@@ -64,13 +73,17 @@ class _LoginScreenViewState extends State<LoginScreen> {
     final accessButton = ElevatedButton(
       onPressed: () async {
         if (formKey.currentState!.validate()) {
-          // canAdvance = handleUserLogin();
+          canAdvance = handleUserLogin();
 
-          // if (await canAdvance) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pushNamed(AppRoutes.homeScreen);
-          });
-          // }
+          if (await canAdvance) {
+            utils.snack('Efetuando login! Aguarde...');
+            Future.delayed(const Duration(seconds: 2), () {
+              Navigator.of(context).pushNamed(AppRoutes.homeScreen);
+            });
+          } else {
+            String? error = prefs.getString('user_login_error');
+            utils.alert('ERRO: $error');
+          }
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),

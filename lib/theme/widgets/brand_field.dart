@@ -1,9 +1,11 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class BrandField extends StatefulWidget {
-  const BrandField({super.key, required this.controller});
-  final TextEditingController controller;
+  BrandField({super.key, required this.models});
+  List<String> models;
 
   @override
   State<StatefulWidget> createState() => _BrandFieldState();
@@ -30,7 +32,7 @@ class _BrandFieldState extends State<BrandField> {
           child: DropdownButton(
             isExpanded: true,
             icon: const Icon(Icons.keyboard_arrow_down_sharp),
-            items: registeredBrands
+            items: widget.models
                 .map((String item) => DropdownMenuItem<String>(
                     value: item, child: Text(item, style: appStyle.inputStyle)))
                 .toList(),

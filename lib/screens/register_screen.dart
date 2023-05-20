@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
 import 'package:simutax_mobile/theme/widgets/email_field.dart';
 import 'package:simutax_mobile/theme/widgets/first_name_field.dart';
@@ -21,16 +22,49 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenViewState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lasttNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController cpfCnpjController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController repasswordController = TextEditingController();
   bool agreeWithLGPD = false;
+  late SharedPreferences prefs;
+  late Future<bool> canAdvance;
+
+  Future<bool> handleUserCreation() async {
+      try {
+        prefs = await SharedPreferences.getInstance();
+        final api = Uri.parse("http://10.0.2.2:300/api/createUser");
+        http.Response response = await http.post(api, body: {
+          "firstname": firstNameController.text,
+          "lastname": lastNameController.text,
+          "identity": cpfCnpjController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+          "terms": 'true'
+        });
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        if (response.statusCode == 201) {
+          String token = data["message"]["token"];
+          prefs.setString('user_token', token);
+          return true;
+        } else if (response.statusCode == 400) {
+          String message = "Usuário já cadastrado";
+          prefs.setString('user_registration_error', message);
+          return false;
+        }
+      } catch (error) {
+        prefs.setString('user_registration_error', error.toString());
+      }
+
+      return false;
+    }
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final descriptionBox = SizedBox(
       child: Text(
@@ -39,7 +73,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     );
 
     final firstNameField = FirstNameField(controller: firstNameController);
-    final lastNameField = LastNameField(controller: lasttNameController);
+    final lastNameField = LastNameField(controller: lastNameController);
     final cpfCnpjField = CpfCnpjField(controller: cpfCnpjController);
     final emailField = EmailField(controller: emailController);
     final passwordField = PasswordField(controller: passwordController);
@@ -47,45 +81,20 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         passwordController: passwordController,
         repasswordController: repasswordController);
 
-    Future<bool> handleUserRegistration() async {
-      final api = Uri.parse("http://10.0.2.2:300/api/createUser");
-      late http.Response response;
-
-      try {
-        response = await http.post(api, body: {
-          "firstname": firstNameController.text,
-          "lastname": lasttNameController.text,
-          "identity": cpfCnpjController.text,
-          "email": emailController.text,
-          "password": passwordController.text,
-          "terms": 'true'
-        });
-
-        if (response.statusCode == 201) {
-          SharedPreferences sharedPref = await SharedPreferences.getInstance();
-          Map<String, dynamic> data = jsonDecode(response.body);
-          String token = data["message"]["token"];
-          sharedPref.setString('user_token', token);
-
-          String? user = sharedPref.getString('user_token');
-          print("USER: $user");
-
-          return true;
-        }
-      } catch (error) {
-        print("ERROR: $error");
-      }
-
-      return false;
-    }
-
     final registerButton = ElevatedButton(
       onPressed: () async {
         if (formKey.currentState!.validate() && agreeWithLGPD) {
-          handleUserRegistration();
-          // Future.delayed(const Duration(seconds: 1), () {
-          //   Navigator.of(context).pop();
-          // });
+          canAdvance = handleUserCreation();
+
+          if (await canAdvance) {
+            utils.snack('Cadastro efetuado! Aguarde...');
+            Future.delayed(const Duration(seconds: 2), () {
+              Navigator.of(context).pop();
+            });
+          } else {
+            String? error = prefs.getString('user_registration_error');
+            utils.alert('ERRO: $error');
+          }
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),

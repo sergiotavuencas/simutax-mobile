@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/widgets/brand_field.dart';
 import 'package:simutax_mobile/theme/widgets/model_field.dart';
@@ -19,6 +23,29 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
   final TextEditingController secondBrandController = TextEditingController();
   final TextEditingController secondModelController = TextEditingController();
   final TextEditingController secondTypeController = TextEditingController();
+  late SharedPreferences prefs;
+  List<String> models = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getModels();
+  }
+
+  void getModels() async {
+    prefs = await SharedPreferences.getInstance();
+    try {
+      final String? token = prefs.getString('user_token');
+      final api = Uri.parse("http://10.0.2.2:300/api/listAllModels");
+      http.Response response = await http.post(api, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+      models = (jsonDecode(response.body) as List<dynamic>).cast<String>();
+    } catch (error) {
+      prefs.setString('get_models_error', error.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +56,10 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final firstBrandField = BrandField(controller: firstBrandController);
+    final firstBrandField = BrandField(models: models);
     final firstModelField = ModelField(controller: firstModelController);
     final firstTypeField = TypeCheckboxes(controller: firstTypeController);
-    final secondBrandField = BrandField(controller: secondBrandController);
+    final secondBrandField = BrandField(models: models);
     final secondModelField = ModelField(controller: secondModelController);
     final secondTypeField = TypeCheckboxes(controller: secondTypeController);
 

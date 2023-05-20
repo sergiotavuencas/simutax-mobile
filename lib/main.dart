@@ -74,11 +74,6 @@ class _StartupScreenViewState extends State<StartupScreen>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final AppStyle appStyle = AppStyle(context);
 

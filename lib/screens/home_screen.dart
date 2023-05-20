@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
