@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:simutax_mobile/theme/app_style.dart';
-import 'package:simutax_mobile/theme/widgets/brand_field.dart';
-import 'package:simutax_mobile/theme/widgets/model_field.dart';
-import 'package:simutax_mobile/theme/widgets/type_checkboxes.dart';
+import 'package:simutax_mobile/theme/widgets/device_fields.dart';
 
 class ComparationScreen extends StatefulWidget {
   const ComparationScreen({super.key});
@@ -62,92 +60,44 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final firstBrandField = BrandField(models: models);
-    final firstModelField = ModelField(controller: firstModelController);
-    final firstTypeField = TypeCheckboxes(controller: firstTypeController);
-    final secondBrandField = BrandField(models: models);
-    final secondModelField = ModelField(controller: secondModelController);
-    final secondTypeField = TypeCheckboxes(controller: secondTypeController);
-
-    final firstDeviceContainer = SizedBox(
-      width: appStyle.width / 1.2,
-      child: Column(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Text("Máquina 1:", style: appStyle.descriptionStyle)),
-          ),
-          firstBrandField,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: appStyle.width / 2.6,
-                child: firstModelField,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: SizedBox(
-                  width: appStyle.width / 2.6,
-                  child: firstTypeField,
-                ),
-              ),
-            ],
-          )
-        ]
-            .map((widget) => Padding(
-                  padding: EdgeInsets.only(bottom: appStyle.height / 70),
-                  child: widget,
-                ))
-            .toList(),
-      ),
+    final firstDeviceContainer = Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+              padding: const EdgeInsets.only(left: 10, bottom: 15),
+              child: Text("Máquina 1:", style: appStyle.descriptionStyle)),
+        ),
+        DeviceFields(
+            brandController: firstBrandController,
+            modelController: firstModelController,
+            typeController: firstTypeController)
+      ],
     );
 
-    final secondDeviceContainer = SizedBox(
-      width: appStyle.width / 1.2,
-      child: Column(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Text("Máquina 2:", style: appStyle.descriptionStyle)),
-          ),
-          secondBrandField,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: appStyle.width / 2.6,
-                child: secondModelField,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: SizedBox(
-                  width: appStyle.width / 2.6,
-                  child: secondTypeField,
-                ),
-              ),
-            ],
-          )
-        ]
-            .map((widget) => Padding(
-                  padding: EdgeInsets.only(bottom: appStyle.height / 70),
-                  child: widget,
-                ))
-            .toList(),
-      ),
+    final secondDeviceContainer = Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+              padding: const EdgeInsets.only(left: 10, bottom: 15),
+              child: Text("Máquina 2:", style: appStyle.descriptionStyle)),
+        ),
+        DeviceFields(
+            brandController: secondBrandController,
+            modelController: secondModelController,
+            typeController: secondTypeController)
+      ],
     );
 
     final compareButton = ElevatedButton(
       onPressed: () async {
-        if (formKey.currentState!.validate()) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pop();
-          });
-        }
+        print(firstBrandController.text);
+        // if (formKey.currentState!.validate()) {
+        //   Future.delayed(const Duration(seconds: 1), () {
+        //     Navigator.of(context).pop();
+        //   });
+        // }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
       child: Stack(

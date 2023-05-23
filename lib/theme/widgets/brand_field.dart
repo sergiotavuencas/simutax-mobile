@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class BrandField extends StatefulWidget {
-  BrandField({super.key, required this.models});
-  List<String> models;
+  const BrandField({super.key, required this.controller});
+  final TextEditingController controller;
+  // BrandField({super.key, required this.models});
+  // List<String> models;
 
   @override
   State<StatefulWidget> createState() => _BrandFieldState();
 }
 
 class _BrandFieldState extends State<BrandField> {
-  List<String> registeredBrands = ['Mercado Pago', 'Elo', 'NuBank'];
-  String selectedBrand = 'Mercado Pago';
+  List<String> brands = ['Cielo', 'PagSeguro', 'Mercado Pago'];
+  String selectedBrand = 'Cielo';
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +34,14 @@ class _BrandFieldState extends State<BrandField> {
           child: DropdownButton(
             isExpanded: true,
             icon: const Icon(Icons.keyboard_arrow_down_sharp),
-            items: widget.models
+            items: brands
                 .map((String item) => DropdownMenuItem<String>(
                     value: item, child: Text(item, style: appStyle.inputStyle)))
                 .toList(),
             onChanged: (value) {
               setState(() {
                 selectedBrand = value!;
+                widget.controller.text = selectedBrand;
               });
             },
             value: selectedBrand,
