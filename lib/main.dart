@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/screens/login_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
@@ -49,6 +50,7 @@ class _StartupScreenViewState extends State<StartupScreen>
         },
       );
     controller.repeat(reverse: false);
+    blockScreenshot();
     super.initState();
 
     Future.delayed(const Duration(seconds: 6), () {
@@ -71,6 +73,10 @@ class _StartupScreenViewState extends State<StartupScreen>
         });
       }
     });
+  }
+
+  void blockScreenshot() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override
