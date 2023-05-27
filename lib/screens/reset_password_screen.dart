@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_mobile/screens/login_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
-import 'package:simutax_mobile/theme/widgets/code_field.dart';
 import 'package:simutax_mobile/theme/widgets/password_field.dart';
 import 'package:simutax_mobile/theme/widgets/repassword_field.dart';
 
@@ -14,7 +12,6 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
   final formKey = GlobalKey<FormState>();
-  final TextEditingController codeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController repasswordController = TextEditingController();
 
@@ -23,12 +20,9 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
     final appStyle = AppStyle(context);
 
     final descriptionBox = SizedBox(
-      child: Text(
-          "Insira o código enviado ao e-mail cadastrado, e sua nova senha.",
-          style: appStyle.descriptionStyle),
+      child: Text("Insira sua nova senha.", style: appStyle.descriptionStyle),
     );
 
-    final codeField = CodeField(controller: codeController);
     final passwordField = PasswordField(controller: passwordController);
     final repasswordField = RepasswordField(
         passwordController: passwordController,
@@ -42,10 +36,6 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: descriptionBox,
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30),
-            child: codeField,
-          ),
           passwordField,
           repasswordField
         ],
@@ -56,12 +46,7 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
       onPressed: () async {
         if (formKey.currentState!.validate()) {
           Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => const LoginScreen(),
-              ),
-            );
+            Navigator.pop(context);
           });
         }
       },

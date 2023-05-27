@@ -13,7 +13,7 @@ class CodeScreen extends StatefulWidget {
 
 class _CodeScreenViewState extends State<CodeScreen> {
   final formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class _CodeScreenViewState extends State<CodeScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final emailField = CodeField(controller: emailController);
+    final codeField = CodeField(controller: codeController);
 
     final redefineButton = ElevatedButton(
       onPressed: () async {
@@ -66,7 +66,7 @@ class _CodeScreenViewState extends State<CodeScreen> {
             padding: const EdgeInsets.only(bottom: 20),
             child: descriptionBox,
           ),
-          emailField,
+          codeField,
         ],
       ),
     );

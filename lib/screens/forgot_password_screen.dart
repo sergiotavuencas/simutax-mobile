@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_mobile/screens/reset_password_screen.dart';
+import 'package:simutax_mobile/screens/code_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/widgets/email_field.dart';
 
@@ -33,7 +33,7 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute<void>(
-                builder: (BuildContext context) => const ResetPasswordScreen(),
+                builder: (BuildContext context) => const CodeScreen(),
               ),
             );
           });
