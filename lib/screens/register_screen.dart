@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
@@ -20,46 +20,18 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenViewState extends State<RegisterScreen> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController cpfCnpjController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController repasswordController = TextEditingController();
-  bool agreeWithLGPD = false;
-  late SharedPreferences prefs;
-  late Future<bool> canAdvance;
-
-  Future<bool> handleUserCreation() async {
-      try {
-        prefs = await SharedPreferences.getInstance();
-        final api = Uri.parse("http://10.0.2.2:300/api/createUser");
-        http.Response response = await http.post(api, body: {
-          "firstname": firstNameController.text,
-          "lastname": lastNameController.text,
-          "identity": cpfCnpjController.text,
-          "email": emailController.text,
-          "password": passwordController.text,
-          "terms": 'true'
-        });
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        if (response.statusCode == 201) {
-          String token = data["message"]["token"];
-          prefs.setString('user_token', token);
-          return true;
-        } else if (response.statusCode == 400) {
-          String message = "Usuário já cadastrado";
-          prefs.setString('user_registration_error', message);
-          return false;
-        }
-      } catch (error) {
-        prefs.setString('user_registration_error', error.toString());
-      }
-
-      return false;
-    }
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _cpfCnpjController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _repasswordController = TextEditingController();
+  bool _agreeWithLGPD = false;
+  late SharedPreferences _prefs;
+  final String _tKey = EncryptData.encryptAES('user_token');
+  final String _mKey = EncryptData.encryptAES('registration_message');
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,38 +40,39 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
     final descriptionBox = SizedBox(
       child: Text(
-          "Preencha todos os campos para efetuar o registro e receber acesso ao aplicativo.",
+          'Preencha todos os campos para efetuar o registro e receber acesso ao aplicativo.',
           style: appStyle.descriptionStyle),
     );
 
-    final firstNameField = FirstNameField(controller: firstNameController);
-    final lastNameField = LastNameField(controller: lastNameController);
-    final cpfCnpjField = CpfCnpjField(controller: cpfCnpjController);
-    final emailField = EmailField(controller: emailController);
-    final passwordField = PasswordField(controller: passwordController);
+    final firstNameField = FirstNameField(controller: _firstNameController);
+    final lastNameField = LastNameField(controller: _lastNameController);
+    final cpfCnpjField = CpfCnpjField(controller: _cpfCnpjController);
+    final emailField = EmailField(controller: _emailController);
+    final passwordField = PasswordField(controller: _passwordController);
     final repasswordField = RepasswordField(
-        passwordController: passwordController,
-        repasswordController: repasswordController);
+        passwordController: _passwordController,
+        repasswordController: _repasswordController);
 
     final registerButton = ElevatedButton(
       onPressed: () async {
-        if (formKey.currentState!.validate() && agreeWithLGPD) {
-          canAdvance = handleUserCreation();
-
-          if (await canAdvance) {
+        if (_formKey.currentState!.validate() && _agreeWithLGPD) {
+          startAnimation();
+          if (await _handleRegistration()) {
             utils.snack('Cadastro efetuado! Aguarde...');
-            Future.delayed(const Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 4), () {
+              endAnimation();
               Navigator.of(context).pop();
             });
           } else {
-            String? error = prefs.getString('user_registration_error');
+            endAnimation();
+            String? error = _prefs.getString(_mKey);
             utils.alert('ERRO: $error');
           }
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
       child: Text(
-        "Registrar-se",
+        'Registrar-se',
         style: appStyle.buttonStyleBlue,
       ),
     );
@@ -127,68 +100,110 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar'),
-        leading: IconButton(
-          icon: Icon(Icons.close, color: appStyle.darkGrey),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: appStyle.height / 40),
-                    child: fields,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: appStyle.height / 40),
-                    child: SizedBox(
-                      width: appStyle.width / 1.2,
-                      child: SizedBox(
-                        width: appStyle.width / 1.2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              child: Checkbox(
-                                activeColor: appStyle.darkBlue,
-                                checkColor: appStyle.yellow,
-                                value: agreeWithLGPD,
-                                onChanged: (value) {
-                                  setState(() {
-                                    agreeWithLGPD = value ?? false;
-                                  });
-                                },
+    return isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Registrar'),
+              leading: IconButton(
+                icon: Icon(Icons.close, color: appStyle.darkGrey),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+            backgroundColor: Colors.white,
+            body: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 40),
+                          child: fields,
+                        ),
+                        Padding(
+                          padding:
+                              EdgeInsets.only(bottom: appStyle.height / 40),
+                          child: SizedBox(
+                            width: appStyle.width / 1.2,
+                            child: SizedBox(
+                              width: appStyle.width / 1.2,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(
+                                    child: Checkbox(
+                                      activeColor: appStyle.darkBlue,
+                                      checkColor: appStyle.yellow,
+                                      value: _agreeWithLGPD,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _agreeWithLGPD = value ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Text(
+                                      'Li e concordo com os termos da LGPD')
+                                ],
                               ),
                             ),
-                            const Text("Li e concordo com os termos da LGPD")
-                          ],
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 20),
+                          child: SizedBox(
+                            width: appStyle.width / 1.1,
+                            child: registerButton,
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: appStyle.height / 20),
-                    child: SizedBox(
-                      width: appStyle.width / 1.1,
-                      child: registerButton,
-                    ),
-                  )
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+  }
+
+  void startAnimation() async {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void endAnimation() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<bool> _handleRegistration() async {
+    Map<String, dynamic> data = await Services().register({
+      'firstname': _firstNameController.text,
+      'lastname': _lastNameController.text,
+      'identity': _cpfCnpjController.text,
+      'email': _emailController.text,
+      'password': _passwordController.text,
+      'terms': 'true'
+    });
+
+    if (data.containsKey('code')) {
+      _prefs = await SharedPreferences.getInstance();
+
+      if (data['code'] == 201) {
+        _prefs.setString(_tKey, data['token']);
+        return true;
+      } else if (data['code'] == 400) {
+        _prefs.setString(_mKey, data['message']);
+        return false;
+      }
+    }
+
+    return false;
   }
 }

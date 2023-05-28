@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-// import 'package:simutax_mobile/screens/code_screen.dart';
+import 'package:simutax_mobile/screens/code_screen.dart';
 import 'package:simutax_mobile/screens/comparation_screen.dart';
 import 'package:simutax_mobile/screens/credit_card_payment_screen.dart';
 import 'package:simutax_mobile/screens/edit_profile_screen.dart';
@@ -22,7 +22,7 @@ class AppRoutes {
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String forgotPasswordScreen = '/forgot';
-  // static const String codeScreen = '/code';
+  static const String codeScreen = '/code';
   static const String resetPasswordScreen = '/reset';
   static const String homeScreen = '/home';
   static const String profileScreen = '/profile';
@@ -40,7 +40,7 @@ class AppRoutes {
       loginScreen: (context) => const LoginScreen(),
       registerScreen: (context) => const RegisterScreen(),
       forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
-      // codeScreen: (context) => const CodeScreen(),
+      codeScreen: (context) => const CodeScreen(),
       resetPasswordScreen: (context) => const ResetPasswordScreen(),
       homeScreen: (context) => const HomeScreen(),
       profileScreen: (context) => const ProfileScreen(),

@@ -27,6 +27,10 @@ class AppStyle {
       fontSize: large, fontWeight: FontWeight.normal, color: darkBlue);
   TextStyle get inputStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
+  TextStyle get validValueInputStyle => TextStyle(
+      fontSize: xxLarge, fontWeight: FontWeight.w500, color: Colors.black);
+  TextStyle get invalidValueInputStyle => TextStyle(
+      fontSize: xxLarge, fontWeight: FontWeight.w500, color: Colors.red);
   TextStyle get descriptionStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
   TextStyle get labelStyle => TextStyle(
