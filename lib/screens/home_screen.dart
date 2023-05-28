@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +13,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreen> {
+  late SharedPreferences _prefs;
+  final String _tKey = EncryptData.encryptAES('user_token');
+  final String _mKey = EncryptData.encryptAES('home_message');
+  String userBalance = '0,00';
+
+  @override
+  void initState() {
+    super.initState();
+    _handleBalance();
+  }
+
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
@@ -26,7 +40,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              "\$ Adicionar Saldo",
+              '\$ Adicionar Saldo',
               style: appStyle.buttonStyleGrey,
             ),
           ),
@@ -59,7 +73,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 14, top: 10),
-                  child: Text("Saldo disponível", style: appStyle.labelStyle),
+                  child: Text('Saldo disponível', style: appStyle.labelStyle),
                 )
               ],
             ),
@@ -76,7 +90,8 @@ class _HomeScreenViewState extends State<HomeScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, left: 10),
-                    child: Text("R\$ 50,00", style: appStyle.descriptionStyle),
+                    child: Text('R\$ $userBalance',
+                        style: appStyle.descriptionStyle),
                   ),
                 ),
               ),
@@ -88,7 +103,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
     final compareIcon = ClipRect(
       child: Image.asset(
-        "lib/resources/icone-comparacao.png",
+        'lib/resources/icone-comparacao.png',
         width: appStyle.width / 4,
         height: appStyle.height / 4,
         fit: BoxFit.scaleDown,
@@ -134,7 +149,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 10, bottom: 10),
-                            child: Text("COMPARAR", style: appStyle.labelStyle),
+                            child: Text('COMPARAR', style: appStyle.labelStyle),
                           ),
                         )
                       ],
@@ -150,7 +165,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
     final simulateIcon = ClipRect(
       child: Image.asset(
-        "lib/resources/icone-simulacao.png",
+        'lib/resources/icone-simulacao.png',
         width: appStyle.width / 3,
         height: appStyle.height / 3,
         fit: BoxFit.scaleDown,
@@ -196,7 +211,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 10, bottom: 10),
-                            child: Text("SIMULAR", style: appStyle.labelStyle),
+                            child: Text('SIMULAR', style: appStyle.labelStyle),
                           ),
                         )
                       ],
@@ -282,5 +297,26 @@ class _HomeScreenViewState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleBalance() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? token = _prefs.getString(_tKey);
+    Map<String, dynamic> data = await Services().balance({
+      'Authorization': 'Bearer $token',
+    });
+
+    if (data.containsKey('code')) {
+      if (data['code'] == 201) {
+        setState(() {
+          userBalance = data['simu_coin'];
+        });
+      } else if (data['code'] == 400) {
+        _prefs.setString(_mKey, data['message'].toString());
+        setState(() {
+          userBalance = '0,00';
+        });
+      }
+    }
   }
 }

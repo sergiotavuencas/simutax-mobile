@@ -19,7 +19,19 @@ class Utils {
         context: context,
         builder: (context) => AlertDialog(
           content: SizedBox(
-            child: Text(message, style: const TextStyle(color: Colors.black)),
+            // width: appStyle.width / 1.1,
+            height: appStyle.height / 5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.red,
+                  size: appStyle.height / 7,
+                ),
+                Text(message, style: const TextStyle(color: Colors.black))
+              ],
+            ),
           ),
         ),
       );

@@ -19,12 +19,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenViewState extends State<LoginScreen> {
+  late SharedPreferences _prefs;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late SharedPreferences _prefs;
   final String _tKey = EncryptData.encryptAES('user_token');
   final String _mKey = EncryptData.encryptAES('login_message');
+  final String _eKey = EncryptData.encryptAES('login_error');
+  final String _seKey = EncryptData.encryptAES('login_socket_error');
   bool isLoading = false;
 
   @override
@@ -56,8 +58,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
             });
           } else {
             endAnimation();
-            // String? message = _prefs.getString(_mKey);
-            // utils.alert('ERRO: $message');
+            utils.alert('Erro ao efetuar login.');
           }
         }
       },
@@ -164,20 +165,24 @@ class _LoginScreenViewState extends State<LoginScreen> {
   }
 
   Future<bool> _handleLogin() async {
+    bool canAdvance = false;
+    _prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> data = await Services().login(
         {'email': _emailController.text, 'password': _passwordController.text});
 
     if (data.containsKey('code')) {
-      _prefs = await SharedPreferences.getInstance();
-
       if (data['code'] == 201) {
         _prefs.setString(_tKey, data['token']);
-        return true;
+        canAdvance = true;
       } else if (data['code'] == 400) {
         _prefs.setString(_mKey, data['message']);
-        return false;
       }
+    } else if (data.containsKey('error')) {
+      _prefs.setString(_eKey, data['error']);
+    } else if (data.containsKey('socket_error')) {
+      _prefs.setString(_seKey, data['socket_error']);
     }
-    return false;
+
+    return canAdvance;
   }
 }

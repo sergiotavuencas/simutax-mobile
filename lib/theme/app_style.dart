@@ -23,24 +23,43 @@ class AppStyle {
 
   TextStyle get groupStyle => GoogleFonts.dmSans(
       fontSize: medium, fontWeight: FontWeight.normal, color: Colors.white);
+
   TextStyle get progressStyle => GoogleFonts.shrikhand(
       fontSize: large, fontWeight: FontWeight.normal, color: darkBlue);
+
   TextStyle get inputStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
+
   TextStyle get validValueInputStyle => TextStyle(
       fontSize: xxLarge, fontWeight: FontWeight.w500, color: Colors.black);
+
   TextStyle get invalidValueInputStyle => TextStyle(
       fontSize: xxLarge, fontWeight: FontWeight.w500, color: Colors.red);
+
   TextStyle get descriptionStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
+
+  TextStyle get hyperlinkStyle =>
+      TextStyle(fontSize: small, fontWeight: FontWeight.w500, color: darkBlue);
+
   TextStyle get labelStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.w700, color: Colors.black);
+
+  TextStyle get tableLabelStyle => TextStyle(
+      fontSize: small, fontWeight: FontWeight.w700, color: Colors.white);
+
+  TextStyle get tableValueStyle => TextStyle(
+      fontSize: small, fontWeight: FontWeight.normal, color: Colors.black);
+
   TextStyle get profileNameStyle => GoogleFonts.dmSans(
       fontSize: medium, fontWeight: FontWeight.w700, color: Colors.black);
+
   TextStyle get profileClipStyle => GoogleFonts.dmSans(
       fontSize: xxxLarge, fontWeight: FontWeight.w700, color: Colors.white);
+
   TextStyle get buttonStyleBlue => TextStyle(
       fontSize: medium, fontWeight: FontWeight.w500, color: Colors.white);
+
   TextStyle get buttonStyleGrey =>
       TextStyle(fontSize: medium, fontWeight: FontWeight.w500, color: darkBlue);
 

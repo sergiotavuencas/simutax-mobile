@@ -1,9 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:simutax_mobile/screens/models_comparation_screen.dart';
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/device_fields.dart';
 
 class ComparationScreen extends StatefulWidget {
@@ -14,46 +16,24 @@ class ComparationScreen extends StatefulWidget {
 }
 
 class _ComparationScreenViewState extends State<ComparationScreen> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController firstBrandController = TextEditingController();
-  final TextEditingController firstModelController = TextEditingController();
-  final TextEditingController firstTypeController = TextEditingController();
-  final TextEditingController secondBrandController = TextEditingController();
-  final TextEditingController secondModelController = TextEditingController();
-  final TextEditingController secondTypeController = TextEditingController();
-  late SharedPreferences prefs;
-  List<String> models = [];
-
-  @override
-  void initState() {
-    super.initState();
-    getModels();
-
-    if (models.isNotEmpty) {
-      for (dynamic element in models) {
-        print(element);
-      }
-    }
-  }
-
-  void getModels() async {
-    prefs = await SharedPreferences.getInstance();
-    try {
-      final String? token = prefs.getString('user_token');
-      final api = Uri.parse("http://10.0.2.2:300/api/listAllModels");
-      http.Response response = await http.post(api, headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      });
-      models = (jsonDecode(response.body) as List<dynamic>).cast<String>();
-    } catch (error) {
-      prefs.setString('get_models_error', error.toString());
-    }
-  }
+  late SharedPreferences _prefs;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstBrandController = TextEditingController();
+  final TextEditingController _firstModelController = TextEditingController();
+  final TextEditingController _firstTypeController = TextEditingController();
+  final TextEditingController _secondBrandController = TextEditingController();
+  final TextEditingController _secondModelController = TextEditingController();
+  final TextEditingController _secondTypeController = TextEditingController();
+  final String _tKey = EncryptData.encryptAES('user_token');
+  final String _mKey = EncryptData.encryptAES('comparation_message');
+  late Map<String, dynamic> _firstModel;
+  late Map<String, dynamic> _secondModel;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final descriptionBox = SizedBox(
       child: Text("Selecione as máquinas para comparar.",
@@ -69,9 +49,9 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
               child: Text("Máquina 1:", style: appStyle.descriptionStyle)),
         ),
         DeviceFields(
-            brandController: firstBrandController,
-            modelController: firstModelController,
-            typeController: firstTypeController)
+            brandController: _firstBrandController,
+            modelController: _firstModelController,
+            typeController: _firstTypeController)
       ],
     );
 
@@ -84,20 +64,42 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
               child: Text("Máquina 2:", style: appStyle.descriptionStyle)),
         ),
         DeviceFields(
-            brandController: secondBrandController,
-            modelController: secondModelController,
-            typeController: secondTypeController)
+            brandController: _secondBrandController,
+            modelController: _secondModelController,
+            typeController: _secondTypeController)
       ],
     );
 
     final compareButton = ElevatedButton(
       onPressed: () async {
-        print(firstBrandController.text);
-        // if (formKey.currentState!.validate()) {
-        //   Future.delayed(const Duration(seconds: 1), () {
-        //     Navigator.of(context).pop();
-        //   });
-        // }
+        await _handleDevices();
+        if ((_firstModel.isNotEmpty && _secondModel.isNotEmpty) &&
+            (_firstModel != _secondModel)) {
+          startAnimation();
+          Future.delayed(const Duration(seconds: 1), () {
+            endAnimation();
+            Navigator.pushReplacement<void, void>(
+              context,
+              MaterialPageRoute<void>(
+                  builder: (BuildContext context) => ModelsComparationScreen(
+                      firstModel: _firstModel, secondModel: _secondModel)),
+            );
+          });
+        } else {
+          endAnimation();
+          String message = '';
+
+          if (_firstModel.isEmpty && _secondModel.isEmpty) {
+            message = 'Selecione as máquinas para comparar';
+          } else if (_firstModel.isEmpty || _secondModel.isEmpty) {
+            message = _firstModel.isEmpty
+                ? 'Selecione a máquina 1'
+                : 'Selecione a máquina 2';
+          } else if (_firstModel == _secondModel) {
+            message = 'Selecione máquinas diferentes para comparar';
+          }
+          utils.alert(message);
+        }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
       child: Stack(
@@ -139,34 +141,77 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comparar'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: appStyle.height / 20),
-                    child: fields,
-                  ),
-                ],
+    return isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Comparar'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back,
+                    color: Color.fromARGB(255, 95, 95, 95)),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+            backgroundColor: Colors.white,
+            body: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 20),
+                          child: fields,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+  }
+
+  void startAnimation() async {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void endAnimation() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> _handleDevices() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? token = _prefs.getString(_tKey);
+    List<Map<String, dynamic>> data = await Services().devices({
+      'Authorization': 'Bearer $token',
+    });
+    _firstModel = {};
+    _secondModel = {};
+
+    if (data[0].containsKey('code')) {
+      if (data[0]['code'] == 201) {
+        for (var element in data) {
+          if (element.containsKey('brand') && element.containsKey('model')) {
+            if (element['brand'] == _firstBrandController.text &&
+                element['model'] == _firstModelController.text) {
+              _firstModel = element;
+            }
+            if (element['brand'] == _secondBrandController.text &&
+                element['model'] == _secondModelController.text) {
+              _secondModel = element;
+            }
+          }
+        }
+      } else if (data[0]['code'] == 400) {
+        _prefs.setString(_mKey, data[1]['message']);
+      }
+    }
   }
 }

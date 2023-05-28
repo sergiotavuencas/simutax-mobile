@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
@@ -11,6 +12,7 @@ import 'package:simutax_mobile/theme/widgets/first_name_field.dart';
 import 'package:simutax_mobile/theme/widgets/last_name_field.dart';
 import 'package:simutax_mobile/theme/widgets/password_field.dart';
 import 'package:simutax_mobile/theme/widgets/repassword_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +22,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenViewState extends State<RegisterScreen> {
+  late SharedPreferences _prefs;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -27,10 +30,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
-  bool _agreeWithLGPD = false;
-  late SharedPreferences _prefs;
   final String _tKey = EncryptData.encryptAES('user_token');
   final String _mKey = EncryptData.encryptAES('registration_message');
+  bool _agreeWithLGPD = false;
   bool isLoading = false;
 
   @override
@@ -65,8 +67,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
             });
           } else {
             endAnimation();
-            String? error = _prefs.getString(_mKey);
-            utils.alert('ERRO: $error');
+            utils.alert('Erro ao efetuar o registro.');
           }
         }
       },
@@ -147,8 +148,35 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
                                       },
                                     ),
                                   ),
-                                  const Text(
-                                      'Li e concordo com os termos da LGPD')
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'Li e concordo com os ',
+                                          style: appStyle.descriptionStyle,
+                                        ),
+                                        TextSpan(
+                                          text: 'termos da LGPD',
+                                          style: appStyle.hyperlinkStyle,
+                                          recognizer: TapGestureRecognizer()
+                                            // ..onTap = () {
+                                            //   launchUrl(Uri.parse(
+                                            //       'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm'));
+                                            // },
+                                            ..onTap = () async {
+                                              final uri = Uri.parse(
+                                                  'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm');
+                                              if (await canLaunchUrl(uri)) {
+                                                await launchUrl(
+                                                  uri,
+                                                );
+                                              }
+                                            },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // const Text('Li e concordo com os termos da LGPD')
                                 ],
                               ),
                             ),
@@ -183,6 +211,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   }
 
   Future<bool> _handleRegistration() async {
+    bool canAdvance = false;
+    _prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> data = await Services().register({
       'firstname': _firstNameController.text,
       'lastname': _lastNameController.text,
@@ -193,17 +223,14 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     });
 
     if (data.containsKey('code')) {
-      _prefs = await SharedPreferences.getInstance();
-
       if (data['code'] == 201) {
         _prefs.setString(_tKey, data['token']);
-        return true;
+        canAdvance = true;
       } else if (data['code'] == 400) {
         _prefs.setString(_mKey, data['message']);
-        return false;
       }
     }
 
-    return false;
+    return canAdvance;
   }
 }
