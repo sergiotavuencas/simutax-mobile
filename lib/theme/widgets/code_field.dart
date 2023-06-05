@@ -19,13 +19,13 @@ class _CodeFieldState extends State<CodeField> {
 
     return TextFormField(
       controller: widget.controller,
-      validator: (input) => input!.hasLength(6, 18) ? null : "Obrigatório",
+      validator: (input) =>
+          input!.isEmpty || input.isWhitespace() ? "Obrigatório" : null,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
         labelText: "Código",
         helperText: "",
       ),
-      maxLength: 6,
       style: appStyle.inputStyle,
     );
   }

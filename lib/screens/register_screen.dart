@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
-import 'package:simutax_mobile/services/services.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
@@ -213,7 +213,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   Future<bool> _handleRegistration() async {
     bool canAdvance = false;
     _prefs = await SharedPreferences.getInstance();
-    Map<String, dynamic> data = await Services().register({
+    Map<String, dynamic> data = await UserServices().register({
       'firstname': _firstNameController.text,
       'lastname': _lastNameController.text,
       'identity': _cpfCnpjController.text,

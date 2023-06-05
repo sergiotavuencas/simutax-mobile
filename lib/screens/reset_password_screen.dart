@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/utils.dart';
+import 'package:simutax_mobile/theme/widgets/code_field.dart';
 import 'package:simutax_mobile/theme/widgets/password_field.dart';
 import 'package:simutax_mobile/theme/widgets/repassword_field.dart';
 
@@ -11,22 +15,26 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController repasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _repasswordController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final descriptionBox = SizedBox(
       child: Text("Insira sua nova senha.", style: appStyle.descriptionStyle),
     );
 
-    final passwordField = PasswordField(controller: passwordController);
+    final codeField = CodeField(controller: _codeController);
+    final passwordField = PasswordField(controller: _passwordController);
     final repasswordField = RepasswordField(
-        passwordController: passwordController,
-        repasswordController: repasswordController);
+        passwordController: _passwordController,
+        repasswordController: _repasswordController);
 
     final fields = SizedBox(
       width: appStyle.width / 1.1,
@@ -36,6 +44,7 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: descriptionBox,
           ),
+          codeField,
           passwordField,
           repasswordField
         ],
@@ -44,10 +53,17 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
 
     final redefineButton = ElevatedButton(
       onPressed: () async {
-        if (formKey.currentState!.validate()) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+        if (_formKey.currentState!.validate()) {
+          startAnimation();
+          if (await _handleReset()) {
+            Future.delayed(const Duration(seconds: 1), () {
+              endAnimation();
+              Navigator.pop(context);
+            });
+          } else {
+            endAnimation();
+            utils.alert('Código incorreto.');
+          }
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -69,40 +85,71 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
       ),
     );
 
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Redefinir Senha'),
-        ),
-        backgroundColor: Colors.white,
-        body: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: SizedBox(
-              height: appStyle.height / 1.35,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: appStyle.height / 20),
-                        child: fields,
-                      ),
-                      SizedBox(
-                        width: appStyle.width / 1.1,
-                        child: redefineButton,
-                      )
-                    ],
+    return isLoading
+        ? const LoadingScreen()
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Redefinir Senha'),
+              ),
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    height: appStyle.height / 1.35,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(top: appStyle.height / 20),
+                              child: fields,
+                            ),
+                            SizedBox(
+                              width: appStyle.width / 1.1,
+                              child: redefineButton,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+  }
+
+  void startAnimation() async {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void endAnimation() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<bool> _handleReset() async {
+    bool canAdvance = false;
+    Map<String, dynamic> data = await UserServices().reset({
+      'token': _codeController.text,
+      'password': _passwordController.text,
+    });
+
+    if (data.containsKey('code')) {
+      canAdvance = true;
+    }
+
+    // print(data.isEmpty);
+
+    return canAdvance;
   }
 }

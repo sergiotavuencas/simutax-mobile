@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:simutax_mobile/screens/code_screen.dart';
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/screens/reset_password_screen.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/email_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -11,12 +15,14 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final descriptionBox = SizedBox(
       child: Text(
@@ -24,19 +30,27 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final emailField = EmailField(controller: emailController);
+    final emailField = EmailField(controller: _emailController);
 
     final redefineButton = ElevatedButton(
       onPressed: () async {
-        if (formKey.currentState!.validate()) {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => const CodeScreen(),
-              ),
-            );
-          });
+        if (_formKey.currentState!.validate()) {
+          startAnimation();
+          if (await _handleForgot()) {
+            Future.delayed(const Duration(seconds: 1), () {
+              endAnimation();
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      const ResetPasswordScreen(),
+                ),
+              );
+            });
+          } else {
+            endAnimation();
+            utils.alert('Erro ao enviar o email.');
+          }
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -71,41 +85,68 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Redefinir Senha'),
-        leading: IconButton(
-          icon: Icon(Icons.close, color: appStyle.darkGrey),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: appStyle.height / 1.35,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: appStyle.height / 20),
-                      child: fields,
-                    ),
-                    SizedBox(
-                      width: appStyle.width / 1.1,
-                      child: redefineButton,
-                    )
-                  ],
-                ),
-              ],
+    return isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Redefinir Senha'),
+              leading: IconButton(
+                icon: Icon(Icons.close, color: appStyle.darkGrey),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+            backgroundColor: Colors.white,
+            body: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height: appStyle.height / 1.35,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 20),
+                            child: fields,
+                          ),
+                          SizedBox(
+                            width: appStyle.width / 1.1,
+                            child: redefineButton,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+  }
+
+  void startAnimation() async {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void endAnimation() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<bool> _handleForgot() async {
+    bool canAdvance = false;
+    Map<String, dynamic> data = await UserServices().forgot({
+      'email': _emailController.text,
+    });
+
+    if (data.containsKey('code')) {
+      canAdvance = true;
+    }
+
+    return canAdvance;
   }
 }

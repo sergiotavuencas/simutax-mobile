@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/screens/models_comparation_screen.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/services/devices/device_services.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
-import 'package:simutax_mobile/services/services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/device_fields.dart';
@@ -189,7 +189,7 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
   Future<void> _handleDevices() async {
     _prefs = await SharedPreferences.getInstance();
     String? token = _prefs.getString(_tKey);
-    List<Map<String, dynamic>> data = await Services().devices({
+    List<Map<String, dynamic>> data = await DeviceServices().devices({
       'Authorization': 'Bearer $token',
     });
     _firstModel = {};

@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
-import 'package:simutax_mobile/services/services.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 
@@ -167,7 +167,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
   Future<bool> _handleLogin() async {
     bool canAdvance = false;
     _prefs = await SharedPreferences.getInstance();
-    Map<String, dynamic> data = await Services().login(
+    Map<String, dynamic> data = await UserServices().login(
         {'email': _emailController.text, 'password': _passwordController.text});
 
     if (data.containsKey('code')) {

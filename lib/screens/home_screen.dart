@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
-import 'package:simutax_mobile/services/services.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -302,7 +302,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
   Future<void> _handleBalance() async {
     _prefs = await SharedPreferences.getInstance();
     String? token = _prefs.getString(_tKey);
-    Map<String, dynamic> data = await Services().balance({
+    Map<String, dynamic> data = await UserServices().balance({
       'Authorization': 'Bearer $token',
     });
 
