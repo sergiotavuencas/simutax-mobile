@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simutax_mobile/screens/code_screen.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/screens/reset_password_screen.dart';
 import 'package:simutax_mobile/services/user/user_services.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/screens/models_comparation_screen.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
-import 'package:simutax_mobile/services/devices/device_services.dart';
+import 'package:simutax_mobile/services/device/device_services.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';

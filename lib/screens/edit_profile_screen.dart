@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
-import 'package:simutax_mobile/theme/widgets/cpf_cnpj_field.dart';
+import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/email_field.dart';
-import 'package:simutax_mobile/theme/widgets/first_name_field.dart';
-import 'package:simutax_mobile/theme/widgets/last_name_field.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -14,15 +16,16 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenViewState extends State<EditProfileScreen> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController cpfCnpjController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+  late SharedPreferences _prefs;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final String _tKey = EncryptData.encryptAES('user_token');
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final profileClip = Material(
       borderRadius: BorderRadius.circular(80),
@@ -71,15 +74,12 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
       ),
     );
 
-    final firstNameField = FirstNameField(controller: firstNameController);
-    final lastNameField = LastNameField(controller: lastNameController);
-    final cpfCnpjField = CpfCnpjField(controller: cpfCnpjController);
-    final emailField = EmailField(controller: emailController);
+    final emailField = EmailField(controller: _emailController);
 
     final fieldsContainer = SizedBox(
       width: appStyle.width / 1.1,
       child: Column(
-        children: [firstNameField, lastNameField, cpfCnpjField, emailField]
+        children: [emailField]
             .map((widget) => Padding(
                   padding: EdgeInsets.only(bottom: appStyle.height / 70),
                   child: widget,
@@ -92,9 +92,15 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
       width: appStyle.width / 1.1,
       child: ElevatedButton(
         onPressed: () async {
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.of(context).pushNamed(AppRoutes.pixPaymentScreen);
-          });
+          if (_formKey.currentState!.validate()) {
+            if (await _handleEdit()) {
+              Future.delayed(const Duration(seconds: 1), () {
+                Navigator.of(context).pop();
+              });
+            } else {
+              utils.alert('Não foi possível mudar o e-mail.');
+            }
+          }
         },
         style: appStyle.createButtonTheme(appStyle.darkBlue),
         child: Stack(
@@ -127,44 +133,79 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: profileContainer,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: fieldsContainer,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: saveButton,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: shutAccountAnchor,
-                ),
-              ],
+    return isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Editar'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back,
+                    color: Color.fromARGB(255, 95, 95, 95)),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Form(
+                  key: _formKey,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 40),
+                            child: profileContainer,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 60),
+                            child: fieldsContainer,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30),
+                            child: saveButton,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: shutAccountAnchor,
+                          ),
+                        ],
+                      ),
+                    ],
+                  )),
+            ),
+          );
+  }
+
+  void startAnimation() async {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void endAnimation() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<bool> _handleEdit() async {
+    bool canAdvance = false;
+    _prefs = await SharedPreferences.getInstance();
+    String? token = _prefs.getString(_tKey);
+    Map<String, dynamic> data = await UserServices().edit({
+      'email': _emailController.text,
+    }, {
+      'Authorization': 'Bearer $token',
+    });
+
+    if (data.containsKey('code')) {
+      if (data['code'] == 10) {
+        canAdvance = true;
+      }
+    }
+
+    return canAdvance;
   }
 }

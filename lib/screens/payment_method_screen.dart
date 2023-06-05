@@ -1,9 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/screens/loading_screen.dart';
+import 'package:simutax_mobile/screens/pix_payment_screen.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/payment/payment_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/value_to_insert_field.dart';
@@ -16,54 +17,13 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
-  final formKey = GlobalKey<FormState>();
-  late TextEditingController valueController = TextEditingController();
-  late SharedPreferences prefs;
-  late Future<bool> canAdvance;
-
-  double handleValueConvertion() {
-    int valueLength = valueController.text.length;
-    String convert = valueController.text;
-
-    if (valueLength >= 8) {
-      convert = convert.replaceAll(',', '.');
-      convert = convert.replaceAll('.', '');
-      return double.parse(convert);
-    } else {
-      return double.parse(convert.replaceAll(',', '.'));
-    }
-  }
-
-  Future<bool> handleUserLogin(double value) async {
-    prefs = await SharedPreferences.getInstance();
-    try {
-      final String? token = prefs.getString('user_token');
-      final api = Uri.parse('http://10.0.2.2:300/api/updateBalance');
-      http.Response response = await http.post(api, body: {
-        'value': '$value',
-      }, headers: {
-        'Authorization': 'Bearer $token',
-      });
-      Map<String, dynamic> data = jsonDecode(response.body);
-
-      if (response.statusCode == 201) {
-        String qrCode = data['message']['qr_code'];
-        String qrCodeBase64 = data['message']['qr_code_base64'];
-        prefs.setString('qr_code', qrCode);
-        prefs.setString('qr_code_base64', qrCodeBase64);
-
-        return true;
-      } else if (response.statusCode == 400) {
-        prefs.setString(
-            'pix_payment_error', 'Erro ao gerar o pagamento por pix');
-        return false;
-      }
-    } catch (error) {
-      prefs.setString('pix_payment_error', error.toString());
-    }
-
-    return false;
-  }
+  late SharedPreferences _prefs;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _valueController = TextEditingController();
+  final String _tKey = EncryptData.encryptAES('user_token');
+  bool _isLoading = false;
+  late String _error;
+  late Map<String, dynamic> _response;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +37,7 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
           style: appStyle.descriptionStyle),
     );
 
-    final valueField = ValueToInsertField(controller: valueController);
+    final valueField = ValueToInsertField(controller: _valueController);
 
     final valueContainer = SizedBox(
       width: appStyle.width / 1.1,
@@ -105,16 +65,21 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
 
     final pixButton = ElevatedButton(
       onPressed: () async {
-        if (valueController.text != '0,00' && valueController.text != '') {
-          double parsedValue = handleValueConvertion();
-
-          if (await handleUserLogin(parsedValue)) {
+        if (_valueController.text != '0,00' && _valueController.text != '') {
+          _startAnimation();
+          if (await _handlePayment()) {
             Future.delayed(const Duration(seconds: 1), () {
-              Navigator.pushNamed(context, AppRoutes.pixPaymentScreen);
+              _endAnimation();
+              Navigator.pushReplacement<void, void>(
+                  context,
+                  MaterialPageRoute<void>(
+                      builder: (BuildContext context) => PixPaymentScreen(
+                          qrCode: _response['qr_code'],
+                          qrCodeBase64: _response['qr_code_base64'])));
             });
           } else {
-            String? error = prefs.getString('pix_payment_error');
-            utils.alert('ERRO: $error');
+            _endAnimation();
+            utils.alert('ERRO: $_error');
           }
         } else {
           utils.alert('Insira um valor válido');
@@ -175,40 +140,93 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recarregar'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: appStyle.height / 20),
-                  child: descriptionBox,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: appStyle.height / 10),
-                  child: valueContainer,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: appStyle.height / 10),
-                  child: buttons,
-                ),
-              ],
+    return _isLoading
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Recarregar'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back,
+                    color: Color.fromARGB(255, 95, 95, 95)),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+            backgroundColor: Colors.white,
+            body: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 20),
+                          child: descriptionBox,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 10),
+                          child: valueContainer,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: appStyle.height / 10),
+                          child: buttons,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+  }
+
+  void _startAnimation() async {
+    setState(() {
+      _isLoading = true;
+    });
+  }
+
+  void _endAnimation() async {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  double _convert() {
+    int valueLength = _valueController.text.length;
+    String convert = _valueController.text;
+
+    if (valueLength >= 8) {
+      convert = convert.replaceAll(',', '.');
+      convert = convert.replaceAll('.', '');
+      return double.parse(convert);
+    } else {
+      return double.parse(convert.replaceAll(',', '.'));
+    }
+  }
+
+  Future<bool> _handlePayment() async {
+    bool canAdvance = false;
+    _prefs = await SharedPreferences.getInstance();
+    String? token = _prefs.getString(_tKey);
+    Map<String, dynamic> data = await PaymentServices().pix({
+      'value': '${_convert()}',
+    }, {
+      'Authorization': 'Bearer $token',
+    });
+
+    if (data.containsKey('code')) {
+      _response.addAll({
+        'qr_code': data['qr_code'],
+        'qr_code_base64': data['qr_code_base64'],
+      });
+      canAdvance = true;
+    } else if (data.containsKey('error')) {
+      _error = data['error'];
+    }
+
+    return canAdvance;
   }
 }

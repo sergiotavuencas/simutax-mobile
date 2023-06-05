@@ -2,33 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class PixPaymentScreen extends StatefulWidget {
-  const PixPaymentScreen({super.key});
+  const PixPaymentScreen(
+      {super.key, required this.qrCode, required this.qrCodeBase64});
+  final String qrCode;
+  final String qrCodeBase64;
 
   @override
   State<StatefulWidget> createState() => _PixPaymentScreenViewState();
 }
 
 class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
-  late String qrCode;
-  late String qrCodeBase64;
-  late SharedPreferences prefs;
-
-  @override
-  void initState() {
-    getPreferences();
-    super.initState();
-  }
-
-  void getPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    qrCode = prefs.getString('qr_code')!;
-    qrCodeBase64 = prefs.getString('qr_code_base64')!;
-  }
-
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
@@ -41,9 +28,7 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
     );
 
     final generatedQRCode = ClipRect(
-        child: qrCodeBase64 != ''
-            ? Image.memory(base64Decode(qrCodeBase64), scale: 4)
-            : null);
+        child: Image.memory(base64Decode(widget.qrCodeBase64), scale: 4));
 
     final linkField = SizedBox(
       width: appStyle.width / 1.1,
@@ -51,7 +36,7 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
       child: IgnorePointer(
         child: TextFormField(
           decoration: InputDecoration(
-            hintText: qrCode,
+            hintText: widget.qrCode,
           ),
           style: appStyle.inputStyle,
         ),
@@ -62,7 +47,7 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
       width: appStyle.width / 1.1,
       child: ElevatedButton(
         onPressed: () {
-          Clipboard.setData(ClipboardData(text: qrCode));
+          Clipboard.setData(ClipboardData(text: widget.qrCode));
         },
         style: appStyle.createButtonTheme(appStyle.darkBlue),
         child: const Text("Copiar link"),

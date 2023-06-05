@@ -6,7 +6,7 @@ import 'package:simutax_mobile/screens/edit_profile_screen.dart';
 import 'package:simutax_mobile/screens/forgot_password_screen.dart';
 import 'package:simutax_mobile/screens/home_screen.dart';
 import 'package:simutax_mobile/screens/login_screen.dart';
-import 'package:simutax_mobile/screens/pix_payment_screen.dart';
+// import 'package:simutax_mobile/screens/pix_payment_screen.dart';
 import 'package:simutax_mobile/screens/payment_method_screen.dart';
 import 'package:simutax_mobile/screens/profile_screen.dart';
 import 'package:simutax_mobile/screens/register_screen.dart';
@@ -48,7 +48,7 @@ class AppRoutes {
       shutProfileScreen: (context) => const ShutProfileScreen(),
       paymentMethodScreen: (context) => const PaymentMethodScreen(),
       creditCardPaymentScreen: (context) => const CreditCardPaymentScreen(),
-      pixPaymentScreen: (context) => const PixPaymentScreen(),
+      // pixPaymentScreen: (context) => const PixPaymentScreen(),
       simulationScreen: (context) => const SimulationScreen(),
       comparationScreen: (context) => const ComparationScreen(),
     };

@@ -112,7 +112,45 @@ class UserServices {
       http.Response response = await http.post(uri, body: body);
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-      print(response.statusCode);
+      if (response.statusCode == 201) {
+        _userData.addAll({'code': jsonResponse['code']});
+      }
+    } catch (error) {
+      _userData.addAll({'error': error});
+    }
+
+    return _userData;
+  }
+
+  Future<Map<String, dynamic>> edit(
+      Map<String, String> body, Map<String, String> headers) async {
+    var uri = Uri.parse('$_address/changeEmail');
+    _userData = {};
+
+    try {
+      http.Response response =
+          await http.put(uri, body: body, headers: headers);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _userData.addAll({'code': jsonResponse['code']});
+      }
+    } catch (error) {
+      _userData.addAll({'error': error});
+    }
+
+    return _userData;
+  }
+
+  Future<Map<String, dynamic>> delete(
+      Map<String, String> body, Map<String, String> headers) async {
+    var uri = Uri.parse('$_address/changeEmail');
+    _userData = {};
+
+    try {
+      http.Response response =
+          await http.put(uri, body: body, headers: headers);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
         _userData.addAll({'code': jsonResponse['code']});
