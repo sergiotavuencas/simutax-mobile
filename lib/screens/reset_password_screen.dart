@@ -16,9 +16,10 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _tokenController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
+  late String _code;
   bool isLoading = false;
 
   @override
@@ -30,7 +31,7 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
       child: Text("Insira sua nova senha.", style: appStyle.descriptionStyle),
     );
 
-    final codeField = CodeField(controller: _codeController);
+    final tokenField = CodeField(controller: _tokenController);
     final passwordField = PasswordField(controller: _passwordController);
     final repasswordField = RepasswordField(
         passwordController: _passwordController,
@@ -44,7 +45,7 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: descriptionBox,
           ),
-          codeField,
+          tokenField,
           passwordField,
           repasswordField
         ],
@@ -55,7 +56,7 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
           startAnimation();
-          if (await _handleReset()) {
+          if (await _handleValidate()) {
             Future.delayed(const Duration(seconds: 1), () {
               endAnimation();
               Navigator.pop(context);
@@ -137,18 +138,30 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
     });
   }
 
+  Future<bool> _handleValidate() async {
+    bool canAdvance = false;
+    Map<String, dynamic> data = await UserServices().validate({
+      'token': _tokenController.text,
+    });
+
+    if (data.containsKey('code')) {
+      _code = data['code'];
+      await _handleReset() == true ? canAdvance = true : null;
+    }
+
+    return canAdvance;
+  }
+
   Future<bool> _handleReset() async {
     bool canAdvance = false;
     Map<String, dynamic> data = await UserServices().reset({
-      'token': _codeController.text,
+      'token': _code,
       'password': _passwordController.text,
     });
 
     if (data.containsKey('code')) {
       canAdvance = true;
     }
-
-    // print(data.isEmpty);
 
     return canAdvance;
   }

@@ -20,7 +20,19 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final String _tKey = EncryptData.encryptAES('user_token');
+  final String _nKey = EncryptData.encryptAES('user_name');
+  String name = '';
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    asyncMethod();
+  }
+
+  void asyncMethod() async {
+    await _handleData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +61,7 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              "Fulano de Tal",
+              name,
               style: appStyle.profileNameStyle,
             ),
           )
@@ -188,6 +200,17 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<void> _handleData() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? n = _prefs.getString(_nKey);
+
+    if (n != null) {
+      setState(() {
+        name = n;
+      });
+    }
   }
 
   Future<bool> _handleEdit() async {

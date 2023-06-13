@@ -62,7 +62,7 @@ class _ModelsComparationScreenViewState extends State<ModelsComparationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Comparar'),
+        title: const Text('Comparação'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 95, 95, 95)),

@@ -36,7 +36,7 @@ class _PaidValueFieldState extends State<PaidValueField> {
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: "Valor pago",
-        prefixText: currency,
+        prefixText: '$currency ',
       ),
       style: appStyle.inputStyle,
       onChanged: (value) {

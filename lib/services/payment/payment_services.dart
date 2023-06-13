@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class PaymentServices {
-  final String _address = 'http://10.0.2.2:300/api';
+  final String _address = 'https://simutax.up.railway.app/api';
   late Map<String, dynamic> _data;
 
   Future<Map<String, dynamic>> pix(
@@ -19,7 +19,6 @@ class PaymentServices {
 
       if (response.statusCode == 201) {
         _data.addAll({
-          'code': jsonResponse['code'],
           'qr_code': jsonResponse['code']['qr_code'],
           'qr_code_base64': jsonResponse['code']['qr_code_base64']
         });

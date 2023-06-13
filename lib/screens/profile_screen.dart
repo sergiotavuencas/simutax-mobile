@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/screens/home_screen.dart';
+import 'package:simutax_mobile/screens/login_screen.dart';
+import 'package:simutax_mobile/services/encrypt_data.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,6 +14,20 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenViewState extends State<ProfileScreen> {
+  late SharedPreferences _prefs;
+  final String _nKey = EncryptData.encryptAES('user_name');
+  String name = '';
+
+  @override
+  void initState() {
+    super.initState();
+    asyncMethod();
+  }
+
+  void asyncMethod() async {
+    await _handleData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
@@ -22,7 +40,7 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
         radius: 80,
         backgroundColor: Colors.transparent,
         child: Text(
-          "F",
+          name.isNotEmpty ? name[0] : '',
           style: appStyle.profileClipStyle,
         ),
       ),
@@ -36,7 +54,7 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              "Fulano de Tal",
+              name.toUpperCase(),
               style: appStyle.profileNameStyle,
             ),
           )
@@ -108,6 +126,7 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
       ),
     );
 
+/*
     final comparationHistoryButton = MaterialButton(
       onPressed: () {
         Future.delayed(const Duration(seconds: 1), () {
@@ -154,11 +173,20 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
         ),
       ),
     );
+*/
 
     final logoffButton = MaterialButton(
-      onPressed: () {
+      onPressed: () async {
         Future.delayed(const Duration(seconds: 1), () {
-          Navigator.of(context).pushNamed(AppRoutes.comparationScreen);
+          // TODO
+          // if (await _handleCache()) {
+          Navigator.pushReplacement<void, void>(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => const LoginScreen(),
+            ),
+          );
+          // }
         });
       },
       child: SizedBox(
@@ -205,13 +233,16 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
     final actionsContainer = SizedBox(
       height: appStyle.height / 1.35,
       child: Column(
-        children:
-            [editInformationsButton, comparationHistoryButton, logoffButton]
-                .map((widget) => Padding(
-                      padding: EdgeInsets.only(bottom: appStyle.height / 60),
-                      child: widget,
-                    ))
-                .toList(),
+        children: [
+          editInformationsButton,
+          // comparationHistoryButton,
+          logoffButton
+        ]
+            .map((widget) => Padding(
+                  padding: EdgeInsets.only(bottom: appStyle.height / 60),
+                  child: widget,
+                ))
+            .toList(),
       ),
     );
 
@@ -221,7 +252,12 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pushReplacement<void, void>(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => const HomeScreen(),
+            ),
+          ),
         ),
       ),
       backgroundColor: Colors.white,
@@ -247,4 +283,20 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
       ),
     );
   }
+
+  Future<void> _handleData() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? n = _prefs.getString(_nKey);
+
+    if (n != null) {
+      setState(() {
+        name = n;
+      });
+    }
+  }
+
+  // TODO
+  // Future<void> _handleCache() async {
+  //   _prefs = await SharedPreferences.getInstance();
+  // }
 }

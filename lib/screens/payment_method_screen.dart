@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simutax_mobile/routes.dart';
+// import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/screens/pix_payment_screen.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
@@ -23,7 +23,8 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
   final String _tKey = EncryptData.encryptAES('user_token');
   bool _isLoading = false;
   late String _error;
-  late Map<String, dynamic> _response;
+  // ignore: prefer_final_fields
+  Map<String, dynamic> _response = {};
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
     final descriptionBox = SizedBox(
       width: appStyle.width / 1.1,
       child: Text(
-          'Insira o valor que deseja adicionar a sua carteira, e escolha o método de pagamento de sua preferência.',
+          'Selecione o valor que deseja adicionar a sua carteira para gerar um código pix.',
           style: appStyle.descriptionStyle),
     );
 
@@ -52,9 +53,12 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
                   width: appStyle.width / 10,
                   child: Text('R\$', style: appStyle.validValueInputStyle),
                 ),
-                SizedBox(
-                  width: appStyle.width / 3,
-                  child: valueField,
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: SizedBox(
+                    width: appStyle.width / 2.5,
+                    child: valueField,
+                  ),
                 )
               ],
             ),
@@ -65,24 +69,26 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
 
     final pixButton = ElevatedButton(
       onPressed: () async {
-        if (_valueController.text != '0,00' && _valueController.text != '') {
+        if (_valueController.text != '') {
           _startAnimation();
           if (await _handlePayment()) {
             Future.delayed(const Duration(seconds: 1), () {
               _endAnimation();
               Navigator.pushReplacement<void, void>(
-                  context,
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) => PixPaymentScreen(
-                          qrCode: _response['qr_code'],
-                          qrCodeBase64: _response['qr_code_base64'])));
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => PixPaymentScreen(
+                      qrCode: _response['qr_code'],
+                      qrCodeBase64: _response['qr_code_base64']),
+                ),
+              );
             });
           } else {
             _endAnimation();
             utils.alert('ERRO: $_error');
           }
         } else {
-          utils.alert('Insira um valor válido');
+          utils.alert('Selecione um valor');
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -91,7 +97,7 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              'Pix',
+              'Efetuar pagamento',
               style: appStyle.buttonStyleBlue,
             ),
           ),
@@ -103,6 +109,7 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
       ),
     );
 
+/*
     final creditCardButton = ElevatedButton(
       onPressed: () async {
         Future.delayed(const Duration(seconds: 1), () {
@@ -126,12 +133,16 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
         ],
       ),
     );
+*/
 
     final buttons = SizedBox(
       height: appStyle.height / 1.35,
       width: appStyle.width / 1.1,
       child: Column(
-        children: <Widget>[pixButton, creditCardButton]
+        children: <Widget>[
+          pixButton,
+          // creditCardButton
+        ]
             .map((widget) => Padding(
                   padding: EdgeInsets.only(bottom: appStyle.height / 60),
                   child: widget,
@@ -217,11 +228,12 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
       'Authorization': 'Bearer $token',
     });
 
-    if (data.containsKey('code')) {
+    if (data.containsKey('qr_code') && data.containsKey('qr_code_base64')) {
       _response.addAll({
         'qr_code': data['qr_code'],
         'qr_code_base64': data['qr_code_base64'],
       });
+
       canAdvance = true;
     } else if (data.containsKey('error')) {
       _error = data['error'];

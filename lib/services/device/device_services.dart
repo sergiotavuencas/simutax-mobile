@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DeviceServices {
-  final String _address = 'http://10.0.2.2:300/api';
+  final String _address = 'http://164.152.62.200:3000/api';
   late List<Map<String, dynamic>> _deviceData;
 
   Future<List<Map<String, dynamic>>> devices(
@@ -38,5 +38,30 @@ class DeviceServices {
     }
 
     return _deviceData;
+  }
+
+  Future<Map<String, dynamic>> simulate(
+      Map<String, dynamic> body, Map<String, String> headers) async {
+    var uri = Uri.parse('$_address/simulate');
+    // ignore: no_leading_underscores_for_local_identifiers
+    Map<String, dynamic> _simulationData = {};
+
+    try {
+      http.Response response =
+          await http.post(uri, body: body, headers: headers);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _simulationData.addAll({
+          'debit': jsonResponse['sucess']['debit'],
+          'credit': jsonResponse['sucess']['credit'],
+          'info': jsonResponse['sucess']['info'],
+        });
+      }
+    } catch (error) {
+      _simulationData.addAll({'error': error});
+    }
+
+    return _simulationData;
   }
 }

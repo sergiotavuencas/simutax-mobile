@@ -1,6 +1,4 @@
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class ValueToInsertField extends StatefulWidget {
@@ -12,43 +10,49 @@ class ValueToInsertField extends StatefulWidget {
 }
 
 class _ValueToInsertFieldState extends State<ValueToInsertField> {
+  List<String> allowedValues = ['', '10', '20', '30', '40', '50'];
+  String selectedValue = '';
+
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
 
-    return TextFormField(
-      controller: widget.controller,
-      validator: (value) {
-        if (value == '0,00') {
-          return 'Campo obrigatório';
-        }
-        return null;
-      },
-      textAlign: TextAlign.right,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        border: UnderlineInputBorder(
-            borderSide: BorderSide(color: appStyle.darkGrey, width: 3)),
-        enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: appStyle.darkGrey, width: 3)),
-        focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: appStyle.darkBlue, width: 3)),
-        filled: false,
-      ),
-      style: appStyle.validValueInputStyle,
-      inputFormatters: <TextInputFormatter>[
-        CurrencyTextInputFormatter(
-          locale: 'pt_br',
-          decimalDigits: 2,
-          symbol: '',
+    return Container(
+      width: appStyle.width / 1.1,
+      height: appStyle.height / 16,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: appStyle.lightGrey,
+          border: Border.all(color: appStyle.mediumGrey, width: 2)),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+            isExpanded: true,
+            icon: const Icon(Icons.keyboard_arrow_down_sharp),
+            items: allowedValues
+                .map((String item) => DropdownMenuItem<String>(
+                    value: item, child: Text(item, style: appStyle.inputStyle)))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                if (value != null) {
+                  selectedValue = value;
+                  widget.controller.text = selectedValue;
+                }
+              });
+            },
+            value: selectedValue,
+          ),
         ),
-      ],
-      onChanged: (value) {
-        widget.controller.value = TextEditingValue(
-          text: value,
-          selection: TextSelection.collapsed(offset: value.length),
-        );
-      },
+      ),
     );
+  }
+
+  void onSelectedValue(value) async {
+    setState(() {
+      selectedValue = value;
+      widget.controller.text = selectedValue;
+    });
   }
 }

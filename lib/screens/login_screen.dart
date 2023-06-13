@@ -2,6 +2,7 @@ import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
+import 'package:simutax_mobile/screens/home_screen.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
 import 'package:simutax_mobile/services/user/user_services.dart';
@@ -54,7 +55,12 @@ class _LoginScreenViewState extends State<LoginScreen> {
             utils.snack('Efetuando login! Aguarde...');
             Future.delayed(const Duration(seconds: 4), () {
               endAnimation();
-              Navigator.of(context).pushNamed(AppRoutes.homeScreen);
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const HomeScreen(),
+                ),
+              );
             });
           } else {
             endAnimation();
@@ -170,11 +176,11 @@ class _LoginScreenViewState extends State<LoginScreen> {
     Map<String, dynamic> data = await UserServices().login(
         {'email': _emailController.text, 'password': _passwordController.text});
 
-    if (data.containsKey('code')) {
-      if (data['code'] == 201) {
+    if (data.containsKey('sucess')) {
+      if (data['sucess'] == 201) {
         _prefs.setString(_tKey, data['token']);
         canAdvance = true;
-      } else if (data['code'] == 400) {
+      } else if (data['sucess'] == 400) {
         _prefs.setString(_mKey, data['message']);
       }
     } else if (data.containsKey('error')) {

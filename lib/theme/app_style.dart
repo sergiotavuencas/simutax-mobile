@@ -45,6 +45,9 @@ class AppStyle {
   TextStyle get labelStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.w700, color: Colors.black);
 
+  TextStyle get futureHistoryStyle => TextStyle(
+      fontSize: small, fontWeight: FontWeight.w700, color: Colors.black);
+
   TextStyle get tableLabelStyle => TextStyle(
       fontSize: small, fontWeight: FontWeight.w700, color: Colors.white);
 

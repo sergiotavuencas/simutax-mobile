@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
+import 'package:simutax_mobile/theme/utils.dart';
 
 class PixPaymentScreen extends StatefulWidget {
   const PixPaymentScreen(
@@ -19,11 +19,12 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
+    final utils = Utils(context);
 
     final descriptionBox = SizedBox(
       width: appStyle.width / 1.1,
       child: Text(
-          "Escaneie o QRCode generado, ou copie o link para efetuar o pagamento.",
+          "Escaneie o QRCode gerado, ou copie o link para efetuar o pagamento.",
           style: appStyle.descriptionStyle),
     );
 
@@ -32,7 +33,7 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
 
     final linkField = SizedBox(
       width: appStyle.width / 1.1,
-      height: appStyle.height / 3,
+      height: appStyle.height / 6,
       child: IgnorePointer(
         child: TextFormField(
           decoration: InputDecoration(
@@ -48,9 +49,10 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
       child: ElevatedButton(
         onPressed: () {
           Clipboard.setData(ClipboardData(text: widget.qrCode));
+          utils.snack('Código copiado!');
         },
         style: appStyle.createButtonTheme(appStyle.darkBlue),
-        child: const Text("Copiar link"),
+        child: const Text("Copiar código pix"),
       ),
     );
 
