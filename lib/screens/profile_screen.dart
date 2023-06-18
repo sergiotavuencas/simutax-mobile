@@ -246,39 +246,42 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Conta'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.pushReplacement<void, void>(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => const HomeScreen(),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Conta'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back,
+                color: Color.fromARGB(255, 95, 95, 95)),
+            onPressed: () => Navigator.pushReplacement<void, void>(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const HomeScreen(),
+              ),
             ),
           ),
         ),
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: profileContainer,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: actionsContainer,
-                ),
-              ],
-            ),
-          ],
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: profileContainer,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60),
+                    child: actionsContainer,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

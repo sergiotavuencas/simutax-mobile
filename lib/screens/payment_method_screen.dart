@@ -153,40 +153,43 @@ class _PaymentMethodScreenViewState extends State<PaymentMethodScreen> {
 
     return _isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Recarregar'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back,
-                    color: Color.fromARGB(255, 95, 95, 95)),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Recarregar'),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 95, 95, 95)),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 20),
-                          child: descriptionBox,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 10),
-                          child: valueContainer,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 10),
-                          child: buttons,
-                        ),
-                      ],
-                    ),
-                  ],
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 20),
+                            child: descriptionBox,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 10),
+                            child: valueContainer,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 10),
+                            child: buttons,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

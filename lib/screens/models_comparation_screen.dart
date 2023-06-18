@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simutax_mobile/screens/comparation_screen.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 
 class ModelsComparationScreen extends StatefulWidget {
@@ -60,29 +61,36 @@ class _ModelsComparationScreenViewState extends State<ModelsComparationScreen> {
           .toList(),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comparação'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: appStyle.height / 40),
-                  child: content,
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Comparação'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back,
+                color: Color.fromARGB(255, 95, 95, 95)),
+            onPressed: () => Navigator.pushReplacement<void, void>(
+              context,
+              MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const ComparationScreen()),
             ),
-          ],
+          ),
+        ),
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: appStyle.height / 40),
+                    child: content,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

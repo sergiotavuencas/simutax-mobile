@@ -296,39 +296,42 @@ class _SimulationScreenViewState extends State<SimulationScreen> {
 
     return isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Simular'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back,
-                    color: Color.fromARGB(255, 95, 95, 95)),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Simular'),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 95, 95, 95)),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 40),
-                          child: inputFields,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: dataFields,
-                        ),
-                        SizedBox(
-                          width: appStyle.width / 1.1,
-                          child: simulateButton,
-                        )
-                      ],
-                    ),
-                  ],
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 40),
+                            child: inputFields,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: dataFields,
+                          ),
+                          SizedBox(
+                            width: appStyle.width / 1.1,
+                            child: simulateButton,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

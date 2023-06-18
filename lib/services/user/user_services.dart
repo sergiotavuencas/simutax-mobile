@@ -61,17 +61,30 @@ class UserServices {
   }
 
   Future<Map<String, dynamic>> balance(Map<String, String> headers) async {
-    var uri = Uri.parse('$_address/balance');
+    var uriBalance = Uri.parse('$_address/balance');
+    var uriSimuCoin = Uri.parse('$_address/simuCoin');
     _userData = {};
 
     try {
-      http.Response response = await http.get(uri, headers: headers);
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      http.Response responseBalance =
+          await http.get(uriBalance, headers: headers);
+      http.Response responseSimuCoin =
+          await http.get(uriSimuCoin, headers: headers);
+      Map<String, dynamic> jsonResponseBalance =
+          jsonDecode(responseBalance.body);
+      Map<String, dynamic> jsonResponseSimuCoin =
+          jsonDecode(responseSimuCoin.body);
 
-      if (response.statusCode == 201) {
+      if (responseBalance.statusCode == 201) {
         _userData.addAll({
-          'name': jsonResponse['sucess']['name'],
-          'balance': jsonResponse['sucess']['balance'],
+          'name': jsonResponseBalance['sucess']['name'],
+          'balance': jsonResponseBalance['sucess']['balance'],
+        });
+      }
+
+      if (responseSimuCoin.statusCode == 201) {
+        _userData.addAll({
+          'simu_coin': jsonResponseSimuCoin['sucess']['balance'],
         });
       }
     } catch (error) {

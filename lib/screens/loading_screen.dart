@@ -9,13 +9,16 @@ class LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appStyle = AppStyle(context);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SpinKitWave(
-          size: 140,
-          color: appStyle.darkBlue,
-          itemCount: 14,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: SpinKitWave(
+            size: 140,
+            color: appStyle.darkBlue,
+            itemCount: 14,
+          ),
         ),
       ),
     );

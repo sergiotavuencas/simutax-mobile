@@ -116,7 +116,6 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
               endAnimation();
               utils.alert('Não foi possível mudar o e-mail.');
             }
-            endAnimation();
           }
         },
         style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -152,45 +151,48 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
 
     return isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Editar'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back,
-                    color: Color.fromARGB(255, 95, 95, 95)),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Editar'),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 95, 95, 95)),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              child: Form(
-                  key: _formKey,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 40),
-                            child: profileContainer,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 60),
-                            child: fieldsContainer,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 30),
-                            child: saveButton,
-                          ),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(top: 10),
-                          //   child: shutAccountAnchor,
-                          // ),
-                        ],
-                      ),
-                    ],
-                  )),
+              backgroundColor: Colors.white,
+              body: SingleChildScrollView(
+                child: Form(
+                    key: _formKey,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: profileContainer,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 60),
+                              child: fieldsContainer,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: saveButton,
+                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(top: 10),
+                            //   child: shutAccountAnchor,
+                            // ),
+                          ],
+                        ),
+                      ],
+                    )),
+              ),
             ),
           );
   }

@@ -58,18 +58,19 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     final registerButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate() && _agreeWithLGPD) {
-          startAnimation();
+          _startAnimation();
           if (await _handleRegistration()) {
             utils.snack('Cadastro efetuado! Aguarde...');
-            Future.delayed(const Duration(seconds: 4), () {
-              endAnimation();
+            Future.delayed(const Duration(seconds: 2), () {
+              _endAnimation();
               Navigator.of(context).pop();
             });
           } else {
-            endAnimation();
+            _endAnimation();
             utils.alert('Erro ao efetuar o registro.');
           }
         } else if (!_agreeWithLGPD) {
+          _endAnimation();
           utils.alert('Por favor, concorde com os termos.');
         }
       },
@@ -105,108 +106,111 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
     return isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Registrar'),
-              leading: IconButton(
-                icon: Icon(Icons.close, color: appStyle.darkGrey),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Registrar'),
+                leading: IconButton(
+                  icon: Icon(Icons.close, color: appStyle.darkGrey),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 40),
-                          child: fields,
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(bottom: appStyle.height / 40),
-                          child: SizedBox(
-                            width: appStyle.width / 1.2,
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 40),
+                            child: fields,
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsets.only(bottom: appStyle.height / 40),
                             child: SizedBox(
                               width: appStyle.width / 1.2,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    child: Checkbox(
-                                      activeColor: appStyle.darkBlue,
-                                      checkColor: appStyle.yellow,
-                                      value: _agreeWithLGPD,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _agreeWithLGPD = value ?? false;
-                                        });
-                                      },
+                              child: SizedBox(
+                                width: appStyle.width / 1.2,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      child: Checkbox(
+                                        activeColor: appStyle.darkBlue,
+                                        checkColor: appStyle.yellow,
+                                        value: _agreeWithLGPD,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _agreeWithLGPD = value ?? false;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: 'Li e concordo com os ',
-                                          style: appStyle.descriptionStyle,
-                                        ),
-                                        TextSpan(
-                                          text: 'termos da LGPD',
-                                          style: appStyle.hyperlinkStyle,
-                                          recognizer: TapGestureRecognizer()
-                                            // ..onTap = () {
-                                            //   launchUrl(Uri.parse(
-                                            //       'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm'));
-                                            // },
-                                            ..onTap = () async {
-                                              final uri = Uri.parse(
-                                                  'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm');
-                                              if (await canLaunchUrl(uri)) {
-                                                await launchUrl(
-                                                  uri,
-                                                );
-                                              }
-                                            },
-                                        ),
-                                      ],
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'Li e concordo com os ',
+                                            style: appStyle.descriptionStyle,
+                                          ),
+                                          TextSpan(
+                                            text: 'termos da LGPD',
+                                            style: appStyle.hyperlinkStyle,
+                                            recognizer: TapGestureRecognizer()
+                                              // ..onTap = () {
+                                              //   launchUrl(Uri.parse(
+                                              //       'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm'));
+                                              // },
+                                              ..onTap = () async {
+                                                final uri = Uri.parse(
+                                                    'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm');
+                                                if (await canLaunchUrl(uri)) {
+                                                  await launchUrl(
+                                                    uri,
+                                                  );
+                                                }
+                                              },
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  // const Text('Li e concordo com os termos da LGPD')
-                                ],
+                                    // const Text('Li e concordo com os termos da LGPD')
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 20),
-                          child: SizedBox(
-                            width: appStyle.width / 1.1,
-                            child: registerButton,
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 20),
+                            child: SizedBox(
+                              width: appStyle.width / 1.1,
+                              child: registerButton,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
   }
 
-  void startAnimation() async {
+  void _startAnimation() async {
     setState(() {
       isLoading = true;
     });
   }
 
-  void endAnimation() async {
+  void _endAnimation() async {
     setState(() {
       isLoading = false;
     });

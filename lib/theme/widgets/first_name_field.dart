@@ -24,9 +24,9 @@ class _FirstNameFieldState extends State<FirstNameField> {
         if (input.hasNumber()) {
           return "Apenas letras";
         }
-        if (input.hasSpace()) {
-          return "Sem espaços em branco";
-        }
+        // if (input.hasSpace()) {
+        //   return "Sem espaços em branco";
+        // }
         return null;
       },
       keyboardType: TextInputType.name,

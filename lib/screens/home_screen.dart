@@ -20,7 +20,9 @@ class _HomeScreenViewState extends State<HomeScreen> {
   final String _tKey = EncryptData.encryptAES('user_token');
   final String _nKey = EncryptData.encryptAES('user_name');
   final String _bKey = EncryptData.encryptAES('user_balance');
+  final String _sKey = EncryptData.encryptAES('user_simucoin');
   String userBalance = '0,00';
+  String userSimuCoin = '0';
   bool isBigger = false;
 
   @override
@@ -75,35 +77,81 @@ class _HomeScreenViewState extends State<HomeScreen> {
           shape: BoxShape.rectangle,
           borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         ),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+            Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 14, top: 10),
-                  child: Text('Saldo disponível', style: appStyle.labelStyle),
-                )
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, top: 10),
+                      child: Text('Saldo', style: appStyle.labelStyle),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: SizedBox(
+                        width: appStyle.width / 3,
+                        height: 40.0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.rectangle,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 10),
+                            child: Text('R\$ $userBalance',
+                                style: appStyle.descriptionStyle),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: SizedBox(
-                width: appStyle.width / 1.15,
-                height: 40.0,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, left: 10),
-                    child: Text('R\$ $userBalance',
-                        style: appStyle.descriptionStyle),
-                  ),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0, top: 10),
+                      child: Text('SimuCoin', style: appStyle.labelStyle),
+                    ),
+                  ],
                 ),
-              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: SizedBox(
+                        width: appStyle.width / 3,
+                        height: 40.0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.rectangle,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10, left: 10),
+                            child: Text(userSimuCoin,
+                                style: appStyle.descriptionStyle),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
@@ -327,11 +375,8 @@ class _HomeScreenViewState extends State<HomeScreen> {
                     ),
                   );
                 },
-                icon: Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: Icon(Icons.account_circle,
-                      size: 40, color: appStyle.darkBlue),
-                ),
+                icon: Icon(Icons.account_circle,
+                    size: 40, color: appStyle.darkBlue),
               )
             ],
           ),
@@ -395,6 +440,13 @@ class _HomeScreenViewState extends State<HomeScreen> {
       setState(() {
         userBalance = data['balance'].toString();
       });
+
+      if (data.containsKey('simu_coin')) {
+        _prefs.setString(_sKey, data['simu_coin'].toString());
+        setState(() {
+          userSimuCoin = data['simu_coin'].toString();
+        });
+      }
     }
   }
 }

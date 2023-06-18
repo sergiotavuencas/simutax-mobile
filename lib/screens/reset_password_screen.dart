@@ -54,14 +54,14 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
     final redefineButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          startAnimation();
+          _startAnimation();
           if (await _handleValidate()) {
-            Future.delayed(const Duration(seconds: 1), () {
-              endAnimation();
+            Future.delayed(const Duration(seconds: 2), () {
+              _endAnimation();
               Navigator.pop(context);
             });
           } else {
-            endAnimation();
+            _endAnimation();
             utils.alert('Código incorreto.');
           }
         }
@@ -125,13 +125,13 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
           );
   }
 
-  void startAnimation() async {
+  void _startAnimation() async {
     setState(() {
       isLoading = true;
     });
   }
 
-  void endAnimation() async {
+  void _endAnimation() async {
     setState(() {
       isLoading = false;
     });

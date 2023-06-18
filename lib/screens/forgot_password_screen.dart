@@ -34,10 +34,10 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
     final redefineButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          startAnimation();
+          _startAnimation();
           if (await _handleForgot()) {
-            Future.delayed(const Duration(seconds: 1), () {
-              endAnimation();
+            Future.delayed(const Duration(seconds: 2), () {
+              _endAnimation();
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
@@ -47,7 +47,7 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
               );
             });
           } else {
-            endAnimation();
+            _endAnimation();
             utils.alert('Erro ao enviar o email.');
           }
         }
@@ -86,37 +86,41 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
 
     return isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Redefinir Senha'),
-              leading: IconButton(
-                icon: Icon(Icons.close, color: appStyle.darkGrey),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Redefinir Senha'),
+                leading: IconButton(
+                  icon: Icon(Icons.close, color: appStyle.darkGrey),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  height: appStyle.height / 1.35,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: appStyle.height / 20),
-                            child: fields,
-                          ),
-                          SizedBox(
-                            width: appStyle.width / 1.1,
-                            child: redefineButton,
-                          )
-                        ],
-                      ),
-                    ],
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    height: appStyle.height / 1.35,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(top: appStyle.height / 20),
+                              child: fields,
+                            ),
+                            SizedBox(
+                              width: appStyle.width / 1.1,
+                              child: redefineButton,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -124,13 +128,13 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
           );
   }
 
-  void startAnimation() async {
+  void _startAnimation() async {
     setState(() {
       isLoading = true;
     });
   }
 
-  void endAnimation() async {
+  void _endAnimation() async {
     setState(() {
       isLoading = false;
     });

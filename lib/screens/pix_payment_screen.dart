@@ -56,38 +56,41 @@ class _PixPaymentScreenViewState extends State<PixPaymentScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pix'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color.fromARGB(255, 95, 95, 95)),
-          onPressed: () => Navigator.of(context).pop(),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Pix'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back,
+                color: Color.fromARGB(255, 95, 95, 95)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: descriptionBox,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: generatedQRCode,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: linkField,
-                ),
-                copyToClipboardButton
-              ],
-            ),
-          ],
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: descriptionBox,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: generatedQRCode,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: linkField,
+                  ),
+                  copyToClipboardButton
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

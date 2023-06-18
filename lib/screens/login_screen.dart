@@ -50,10 +50,10 @@ class _LoginScreenViewState extends State<LoginScreen> {
     final accessButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          // startAnimation();
+          _startAnimation();
           if (await _handleLogin()) {
-            Future.delayed(const Duration(seconds: 4), () {
-              // endAnimation();
+            Future.delayed(const Duration(seconds: 2), () {
+              _endAnimation();
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
@@ -62,7 +62,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
               );
             });
           } else {
-            // endAnimation();
+            _endAnimation();
             utils.alert('Erro ao efetuar login.');
           }
         }
@@ -157,13 +157,13 @@ class _LoginScreenViewState extends State<LoginScreen> {
           );
   }
 
-  void startAnimation() async {
+  void _startAnimation() async {
     setState(() {
       isLoading = true;
     });
   }
 
-  void endAnimation() async {
+  void _endAnimation() async {
     setState(() {
       isLoading = false;
     });

@@ -143,31 +143,34 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
 
     return isLoading
         ? const LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('Comparar'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back,
-                    color: Color.fromARGB(255, 95, 95, 95)),
-                onPressed: () => Navigator.of(context).pop(),
+        : WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Comparar'),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 95, 95, 95)),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ),
-            ),
-            backgroundColor: Colors.white,
-            body: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: appStyle.height / 20),
-                          child: fields,
-                        ),
-                      ],
-                    ),
-                  ],
+              backgroundColor: Colors.white,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: appStyle.height / 20),
+                            child: fields,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
