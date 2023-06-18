@@ -25,9 +25,9 @@ class _LoginScreenViewState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final String _tKey = EncryptData.encryptAES('user_token');
-  final String _mKey = EncryptData.encryptAES('login_message');
-  final String _eKey = EncryptData.encryptAES('login_error');
-  final String _seKey = EncryptData.encryptAES('login_socket_error');
+  // final String _mKey = EncryptData.encryptAES('login_message');
+  // final String _eKey = EncryptData.encryptAES('login_error');
+  // final String _seKey = EncryptData.encryptAES('login_socket_error');
   bool isLoading = false;
 
   @override
@@ -50,11 +50,10 @@ class _LoginScreenViewState extends State<LoginScreen> {
     final accessButton = ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          startAnimation();
+          // startAnimation();
           if (await _handleLogin()) {
-            utils.snack('Efetuando login! Aguarde...');
             Future.delayed(const Duration(seconds: 4), () {
-              endAnimation();
+              // endAnimation();
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
@@ -63,7 +62,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
               );
             });
           } else {
-            endAnimation();
+            // endAnimation();
             utils.alert('Erro ao efetuar login.');
           }
         }
@@ -176,17 +175,9 @@ class _LoginScreenViewState extends State<LoginScreen> {
     Map<String, dynamic> data = await UserServices().login(
         {'email': _emailController.text, 'password': _passwordController.text});
 
-    if (data.containsKey('sucess')) {
-      if (data['sucess'] == 201) {
-        _prefs.setString(_tKey, data['token']);
-        canAdvance = true;
-      } else if (data['sucess'] == 400) {
-        _prefs.setString(_mKey, data['message']);
-      }
-    } else if (data.containsKey('error')) {
-      _prefs.setString(_eKey, data['error']);
-    } else if (data.containsKey('socket_error')) {
-      _prefs.setString(_seKey, data['socket_error']);
+    if (data.containsKey('token')) {
+      _prefs.setString(_tKey, data['token']);
+      canAdvance = true;
     }
 
     return canAdvance;

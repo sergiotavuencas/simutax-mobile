@@ -19,7 +19,6 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
   final TextEditingController _tokenController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
-  late String _code;
   bool isLoading = false;
 
   @override
@@ -145,22 +144,23 @@ class _ResetPasswordScreenViewState extends State<ResetPasswordScreen> {
     });
 
     if (data.containsKey('code')) {
-      _code = data['code'];
-      await _handleReset() == true ? canAdvance = true : null;
+      if (data['code'] != null) {
+        await _handleReset(data['code']) == true ? canAdvance = true : null;
+      }
     }
 
     return canAdvance;
   }
 
-  Future<bool> _handleReset() async {
+  Future<bool> _handleReset(String code) async {
     bool canAdvance = false;
     Map<String, dynamic> data = await UserServices().reset({
-      'token': _code,
+      'token': code,
       'password': _passwordController.text,
     });
 
     if (data.containsKey('code')) {
-      canAdvance = true;
+      data['code'] == 10 ? canAdvance = true : null;
     }
 
     return canAdvance;

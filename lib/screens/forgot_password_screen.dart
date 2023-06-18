@@ -143,7 +143,7 @@ class _ForgotPasswordScreenViewState extends State<ForgotPasswordScreen> {
     });
 
     if (data.containsKey('code')) {
-      canAdvance = true;
+      data['code'] == 5 ? canAdvance = true : null;
     }
 
     return canAdvance;

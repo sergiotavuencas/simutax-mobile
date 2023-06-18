@@ -31,7 +31,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
   final String _tKey = EncryptData.encryptAES('user_token');
-  final String _mKey = EncryptData.encryptAES('registration_message');
+  // final String _mKey = EncryptData.encryptAES('registration_message');
   bool _agreeWithLGPD = false;
   bool isLoading = false;
 
@@ -69,6 +69,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
             endAnimation();
             utils.alert('Erro ao efetuar o registro.');
           }
+        } else if (!_agreeWithLGPD) {
+          utils.alert('Por favor, concorde com os termos.');
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -222,13 +224,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
       'terms': 'true'
     });
 
-    if (data.containsKey('code')) {
-      if (data['code'] == 201) {
-        _prefs.setString(_tKey, data['token']);
-        canAdvance = true;
-      } else if (data['code'] == 400) {
-        _prefs.setString(_mKey, data['message']);
-      }
+    if (data.containsKey('token')) {
+      _prefs.setString(_tKey, data['token']);
+      canAdvance = true;
     }
 
     return canAdvance;

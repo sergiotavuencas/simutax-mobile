@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simutax_mobile/routes.dart';
+// import 'package:simutax_mobile/routes.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
 import 'package:simutax_mobile/services/user/user_services.dart';
@@ -47,7 +47,7 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
         radius: 80,
         backgroundColor: Colors.transparent,
         child: Text(
-          "F",
+          name[0].toUpperCase(),
           style: appStyle.profileClipStyle,
         ),
       ),
@@ -61,7 +61,7 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
           Align(
             alignment: Alignment.center,
             child: Text(
-              name,
+              name.toUpperCase(),
               style: appStyle.profileNameStyle,
             ),
           )
@@ -105,13 +105,18 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
       child: ElevatedButton(
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
+            startAnimation();
             if (await _handleEdit()) {
+              utils.snack('E-mail alterado com sucesso!');
               Future.delayed(const Duration(seconds: 1), () {
+                endAnimation();
                 Navigator.of(context).pop();
               });
             } else {
+              endAnimation();
               utils.alert('Não foi possível mudar o e-mail.');
             }
+            endAnimation();
           }
         },
         style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -133,17 +138,17 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
       ),
     );
 
-    final shutAccountAnchor = MaterialButton(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onPressed: () {
-        Navigator.pushNamed(context, AppRoutes.shutProfileScreen);
-      },
-      child: Text(
-        "Encerrar conta?",
-        style: appStyle.buttonStyleGrey,
-      ),
-    );
+    // final shutAccountAnchor = MaterialButton(
+    //   splashColor: Colors.transparent,
+    //   highlightColor: Colors.transparent,
+    //   onPressed: () {
+    //     Navigator.pushNamed(context, AppRoutes.shutProfileScreen);
+    //   },
+    //   child: Text(
+    //     "Encerrar conta?",
+    //     style: appStyle.buttonStyleGrey,
+    //   ),
+    // );
 
     return isLoading
         ? const LoadingScreen()
@@ -178,10 +183,10 @@ class _EditProfileScreenViewState extends State<EditProfileScreen> {
                             padding: const EdgeInsets.only(top: 30),
                             child: saveButton,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: shutAccountAnchor,
-                          ),
+                          // Padding(
+                          //   padding: const EdgeInsets.only(top: 10),
+                          //   child: shutAccountAnchor,
+                          // ),
                         ],
                       ),
                     ],

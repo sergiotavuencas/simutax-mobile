@@ -17,12 +17,8 @@ class UserServices {
 
       if (response.statusCode == 201) {
         _userData.addAll({
-          'token': jsonResponse['code']['token'],
-          'code': response.statusCode
+          'token': jsonResponse['sucess']['token'],
         });
-      } else if (response.statusCode == 400) {
-        _userData.addAll(
-            {'code': jsonResponse['code'], 'status_code': response.statusCode});
       }
     } catch (error) {
       _userData.addAll({'error': error});
@@ -42,7 +38,6 @@ class UserServices {
       if (response.statusCode == 201) {
         _userData.addAll({
           'token': jsonResponse['sucess']['token'],
-          'sucess': response.statusCode
         });
       } else if (response.statusCode == 400) {
         String message = jsonResponse['sucess'] == 'Senha invalida'
@@ -116,7 +111,7 @@ class UserServices {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        _userData.addAll({'code': jsonResponse['code']});
+        _userData.addAll({'code': jsonResponse['sucess']['code']});
       }
     } catch (error) {
       _userData.addAll({'error': error});
@@ -134,7 +129,7 @@ class UserServices {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        _userData.addAll({'code': jsonResponse['code']});
+        _userData.addAll({'code': jsonResponse['sucess']['token']});
       }
     } catch (error) {
       _userData.addAll({'error': error});
@@ -152,7 +147,7 @@ class UserServices {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        _userData.addAll({'code': jsonResponse['code']});
+        _userData.addAll({'code': jsonResponse['sucess']['code']});
       }
     } catch (error) {
       _userData.addAll({'error': error});
@@ -172,7 +167,7 @@ class UserServices {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        _userData.addAll({'code': jsonResponse['code']});
+        _userData.addAll({'code': jsonResponse['sucess']['code']});
       }
     } catch (error) {
       _userData.addAll({'error': error});
