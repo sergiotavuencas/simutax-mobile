@@ -38,6 +38,9 @@ class UserServices {
       if (response.statusCode == 201) {
         _userData.addAll({
           'token': jsonResponse['sucess']['token'],
+          'name': jsonResponse['sucess']['name'],
+          'balance': jsonResponse['sucess']['balace'],
+          'coin': jsonResponse['sucess']['coin'],
         });
       } else if (response.statusCode == 400) {
         String message = jsonResponse['sucess'] == 'Senha invalida'
@@ -61,41 +64,7 @@ class UserServices {
   }
 
   Future<Map<String, dynamic>> balance(Map<String, String> headers) async {
-    var uriBalance = Uri.parse('$_address/balance');
-    var uriSimuCoin = Uri.parse('$_address/simuCoin');
-    _userData = {};
-
-    try {
-      http.Response responseBalance =
-          await http.get(uriBalance, headers: headers);
-      http.Response responseSimuCoin =
-          await http.get(uriSimuCoin, headers: headers);
-      Map<String, dynamic> jsonResponseBalance =
-          jsonDecode(responseBalance.body);
-      Map<String, dynamic> jsonResponseSimuCoin =
-          jsonDecode(responseSimuCoin.body);
-
-      if (responseBalance.statusCode == 201) {
-        _userData.addAll({
-          'name': jsonResponseBalance['sucess']['name'],
-          'balance': jsonResponseBalance['sucess']['balance'],
-        });
-      }
-
-      if (responseSimuCoin.statusCode == 201) {
-        _userData.addAll({
-          'simu_coin': jsonResponseSimuCoin['sucess']['balance'],
-        });
-      }
-    } catch (error) {
-      _userData.addAll({'error': error});
-    }
-
-    return _userData;
-  }
-
-  Future<Map<String, dynamic>> simuCoin(Map<String, String> headers) async {
-    var uri = Uri.parse('$_address/simuCoin');
+    var uri = Uri.parse('$_address/balance');
     _userData = {};
 
     try {
@@ -104,9 +73,12 @@ class UserServices {
 
       if (response.statusCode == 201) {
         _userData.addAll({
-          'name': jsonResponse['success']['name'],
-          'balance': jsonResponse['success']['balance'],
+          'name': jsonResponse['sucess']['name'],
+          'balance': jsonResponse['sucess']['balance'],
+          'coin': jsonResponse['sucess']['coin'],
         });
+
+        // print('Data: $_userData');
       }
     } catch (error) {
       _userData.addAll({'error': error});
@@ -201,6 +173,43 @@ class UserServices {
 
       if (response.statusCode == 201) {
         _userData.addAll({'code': jsonResponse['code']});
+      }
+    } catch (error) {
+      _userData.addAll({'error': error});
+    }
+
+    return _userData;
+  }
+
+  Future<Map<String, dynamic>> updateBalance(
+      Map<String, String> headers) async {
+    var uri = Uri.parse('$_address/getBalance');
+    _userData = {};
+
+    try {
+      http.Response response = await http.get(uri, headers: headers);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _userData.addAll({'success': jsonResponse['sucess']['result']});
+      }
+    } catch (error) {
+      _userData.addAll({'error': error});
+    }
+
+    return _userData;
+  }
+
+  Future<Map<String, dynamic>> updateCoin(Map<String, String> headers) async {
+    var uri = Uri.parse('$_address/getCoin');
+    _userData = {};
+
+    try {
+      http.Response response = await http.get(uri, headers: headers);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _userData.addAll({'success': jsonResponse['sucess']['result']});
       }
     } catch (error) {
       _userData.addAll({'error': error});

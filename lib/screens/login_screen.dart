@@ -25,6 +25,9 @@ class _LoginScreenViewState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final String _tKey = EncryptData.encryptAES('user_token');
+  final String _nKey = EncryptData.encryptAES('user_name');
+  final String _bKey = EncryptData.encryptAES('user_balance');
+  final String _cKey = EncryptData.encryptAES('user_coin');
   // final String _mKey = EncryptData.encryptAES('login_message');
   // final String _eKey = EncryptData.encryptAES('login_error');
   // final String _seKey = EncryptData.encryptAES('login_socket_error');
@@ -176,7 +179,10 @@ class _LoginScreenViewState extends State<LoginScreen> {
         {'email': _emailController.text, 'password': _passwordController.text});
 
     if (data.containsKey('token')) {
-      _prefs.setString(_tKey, data['token']);
+      await _prefs.setString(_tKey, data['token']);
+      await _prefs.setString(_nKey, data['name']);
+      await _prefs.setString(_bKey, data['balance'].toString());
+      await _prefs.setString(_cKey, data['coin'].toString());
       canAdvance = true;
     }
 

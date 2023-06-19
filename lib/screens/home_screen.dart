@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simutax_mobile/routes.dart';
@@ -10,6 +12,10 @@ import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  // HomeScreen({super.key, name, balance, coin});
+  // late String name;
+  // late String balance;
+  // late String coin;
 
   @override
   State<StatefulWidget> createState() => _HomeScreenViewState();
@@ -20,7 +26,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
   final String _tKey = EncryptData.encryptAES('user_token');
   final String _nKey = EncryptData.encryptAES('user_name');
   final String _bKey = EncryptData.encryptAES('user_balance');
-  final String _sKey = EncryptData.encryptAES('user_simucoin');
+  final String _cKey = EncryptData.encryptAES('user_coin');
   String userBalance = '0,00';
   String userSimuCoin = '0';
   bool isBigger = false;
@@ -32,7 +38,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
   }
 
   void asyncMethod() async {
-    await _handleBalance();
+    await _handleCache();
   }
 
   @override
@@ -419,34 +425,50 @@ class _HomeScreenViewState extends State<HomeScreen> {
         ));
   }
 
+  Future<bool> _handleCache() async {
+    bool isCached = false;
+    _prefs = await SharedPreferences.getInstance();
+    String? t = _prefs.getString(_tKey);
+    String? n = _prefs.getString(_nKey);
+    String? b = _prefs.getString(_bKey);
+    String? c = _prefs.getString(_cKey);
+
+    if ((t != null) && (n != null) && (b != null) && (c != null)) {
+      setState(() {
+        userBalance = b;
+        userSimuCoin = c;
+      });
+      isCached = true;
+    }
+
+    return isCached;
+  }
+
   Future<void> _handleBalance() async {
     _prefs = await SharedPreferences.getInstance();
     String? t = _prefs.getString(_tKey);
-    String? b = _prefs.getString(_bKey);
     Map<String, dynamic> data =
         await UserServices().balance({'Authorization': 'Bearer $t'});
 
-    if (data.containsKey('balance') && data.containsKey('name')) {
-      if (b != null) {
-        if (int.parse(b) < data['balance']) {
-          setState(() {
-            isBigger = true;
-          });
-        }
-      }
+    if (data.containsKey('name')) {
+      _prefs.setString(_bKey, data['name'].toString());
+      setState(() {
+        userBalance = data['name'].toString();
+      });
+    }
 
-      _prefs.setString(_nKey, data['name']);
+    if (data.containsKey('balance')) {
       _prefs.setString(_bKey, data['balance'].toString());
       setState(() {
         userBalance = data['balance'].toString();
       });
+    }
 
-      if (data.containsKey('simu_coin')) {
-        _prefs.setString(_sKey, data['simu_coin'].toString());
-        setState(() {
-          userSimuCoin = data['simu_coin'].toString();
-        });
-      }
+    if (data.containsKey('coin')) {
+      _prefs.setString(_cKey, data['coin'].toString());
+      setState(() {
+        userSimuCoin = data['coin'].toString();
+      });
     }
   }
 }

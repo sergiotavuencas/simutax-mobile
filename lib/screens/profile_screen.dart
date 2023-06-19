@@ -73,7 +73,10 @@ class _ProfileScreenViewState extends State<ProfileScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: profileName,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: profileName,
+            ),
           ),
         ],
       ),

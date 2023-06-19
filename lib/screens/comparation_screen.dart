@@ -4,6 +4,7 @@ import 'package:simutax_mobile/screens/models_comparation_screen.dart';
 import 'package:simutax_mobile/screens/loading_screen.dart';
 import 'package:simutax_mobile/services/device/device_services.dart';
 import 'package:simutax_mobile/services/encrypt_data.dart';
+import 'package:simutax_mobile/services/user/user_services.dart';
 import 'package:simutax_mobile/theme/app_style.dart';
 import 'package:simutax_mobile/theme/utils.dart';
 import 'package:simutax_mobile/theme/widgets/device_fields.dart';
@@ -72,33 +73,37 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
 
     final compareButton = ElevatedButton(
       onPressed: () async {
-        await _handleDevices();
-        if ((_firstModel.isNotEmpty && _secondModel.isNotEmpty) &&
-            (_firstModel != _secondModel)) {
-          startAnimation();
-          Future.delayed(const Duration(seconds: 1), () {
+        if (await _handleDevices()) {
+          if ((_firstModel.isNotEmpty && _secondModel.isNotEmpty) &&
+              (_firstModel != _secondModel)) {
+            utils.snack('Saldo atualizado!');
+            startAnimation();
+            Future.delayed(const Duration(seconds: 1), () {
+              endAnimation();
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => ModelsComparationScreen(
+                        firstModel: _firstModel, secondModel: _secondModel)),
+              );
+            });
+          } else {
             endAnimation();
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute<void>(
-                  builder: (BuildContext context) => ModelsComparationScreen(
-                      firstModel: _firstModel, secondModel: _secondModel)),
-            );
-          });
-        } else {
-          endAnimation();
-          String message = '';
+            String message = '';
 
-          if (_firstModel.isEmpty && _secondModel.isEmpty) {
-            message = 'Selecione as máquinas para comparar';
-          } else if (_firstModel.isEmpty || _secondModel.isEmpty) {
-            message = _firstModel.isEmpty
-                ? 'Selecione a máquina 1'
-                : 'Selecione a máquina 2';
-          } else if (_firstModel == _secondModel) {
-            message = 'Selecione máquinas diferentes para comparar';
+            if (_firstModel.isEmpty && _secondModel.isEmpty) {
+              message = 'Selecione as máquinas para comparar';
+            } else if (_firstModel.isEmpty || _secondModel.isEmpty) {
+              message = _firstModel.isEmpty
+                  ? 'Selecione a máquina 1'
+                  : 'Selecione a máquina 2';
+            } else if (_firstModel == _secondModel) {
+              message = 'Selecione máquinas diferentes para comparar';
+            }
+            utils.alert(message);
           }
-          utils.alert(message);
+        } else {
+          utils.alert('Erro ao atualizar os dados.');
         }
       },
       style: appStyle.createButtonTheme(appStyle.darkBlue),
@@ -189,7 +194,8 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
     });
   }
 
-  Future<void> _handleDevices() async {
+  Future<bool> _handleDevices() async {
+    bool canAdvance = false;
     _prefs = await SharedPreferences.getInstance();
     String? token = _prefs.getString(_tKey);
     List<Map<String, dynamic>> data = await DeviceServices().devices({
@@ -212,9 +218,40 @@ class _ComparationScreenViewState extends State<ComparationScreen> {
             }
           }
         }
+
+        if (await _updateBalanceAndCoin(token!)) {
+          canAdvance = true;
+        }
       } else if (data[0]['code'] == 400) {
         _prefs.setString(_mKey, data[1]['message']);
       }
     }
+
+    return canAdvance;
+  }
+
+  Future<bool> _updateBalanceAndCoin(String token) async {
+    bool updated = false;
+    Map<String, dynamic> coinData = await UserServices().updateCoin({
+      'Authorization': 'Bearer $token',
+    });
+
+    if (coinData.containsKey('success')) {
+      if (coinData['success']) {
+        updated = true;
+      } else {
+        Map<String, dynamic> balanceData = await UserServices().updateBalance({
+          'Authorization': 'Bearer $token',
+        });
+
+        if (balanceData.containsKey('success')) {
+          if (balanceData['success']) {
+            updated = true;
+          }
+        }
+      }
+    }
+
+    return updated;
   }
 }
